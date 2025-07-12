@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'notification_model.g.dart';
 
 @JsonSerializable()
-class NotificationModel {
+class Notification {
   final String id;
   final String userId;
   final String type;
@@ -15,7 +15,7 @@ class NotificationModel {
   final bool isRead;
   final DateTime createdAt;
 
-  NotificationModel({
+  Notification({
     required this.id,
     required this.userId,
     required this.type,
@@ -28,7 +28,7 @@ class NotificationModel {
   });
 
   // Create a copy with updated fields
-  NotificationModel copyWith({
+  Notification copyWith({
     String? id,
     String? userId,
     String? type,
@@ -39,7 +39,7 @@ class NotificationModel {
     bool? isRead,
     DateTime? createdAt,
   }) {
-    return NotificationModel(
+    return Notification(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       type: type ?? this.type,
@@ -52,14 +52,14 @@ class NotificationModel {
     );
   }
 
-  factory NotificationModel.fromJson(Map<String, dynamic> json) => _$NotificationModelFromJson(json);
+  factory Notification.fromJson(Map<String, dynamic> json) => _$NotificationFromJson(json);
   
-  Map<String, dynamic> toJson() => _$NotificationModelToJson(this);
+  Map<String, dynamic> toJson() => _$NotificationToJson(this);
   
   // Convert to a JSON string
   String toRawJson() => json.encode(toJson());
   
   // Create an instance from a JSON string
-  factory NotificationModel.fromRawJson(String str) => 
-      NotificationModel.fromJson(json.decode(str) as Map<String, dynamic>);
+  factory Notification.fromRawJson(String str) => 
+      Notification.fromJson(json.decode(str) as Map<String, dynamic>);
 }

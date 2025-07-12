@@ -14,6 +14,9 @@ class SocketService {
   // Socket.io client instance
   late IO.Socket _socket;
   
+  // Getter for socket instance
+  IO.Socket get socket => _socket;
+  
   // Connection state
   ValueNotifier<bool> isConnected = ValueNotifier<bool>(false);
   
