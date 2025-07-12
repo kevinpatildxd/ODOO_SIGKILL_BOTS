@@ -50,9 +50,9 @@ class NotificationProvider extends ChangeNotifier {
       );
       
       if (refresh) {
-        _notifications = result.data;
+        _notifications = result.items;
       } else {
-        _notifications.addAll(result.data);
+        _notifications.addAll(result.items);
       }
       
       _totalPages = result.totalPages;
@@ -119,9 +119,10 @@ class NotificationProvider extends ChangeNotifier {
             id: _notifications[i].id,
             userId: _notifications[i].userId,
             type: _notifications[i].type,
+            title: _notifications[i].title,
             message: _notifications[i].message,
-            targetId: _notifications[i].targetId,
-            targetType: _notifications[i].targetType,
+            referenceType: _notifications[i].referenceType,
+            referenceId: _notifications[i].referenceId,
             isRead: true,
             createdAt: _notifications[i].createdAt,
           );

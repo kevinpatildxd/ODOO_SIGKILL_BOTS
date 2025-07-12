@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:stackit_frontend/config/theme.dart';
+import 'package:stackit_frontend/presentation/providers/notification_provider.dart';
+import 'package:stackit_frontend/presentation/widgets/notification/notification_badge.dart';
 
 enum NavigationItem {
   home,
@@ -53,7 +56,7 @@ class BottomNavigation extends StatelessWidget {
                 'Search',
               ),
               _buildAskButton(context),
-              _buildNavItem(
+              _buildNotificationItem(
                 context,
                 NavigationItem.notifications,
                 Icons.notifications_outlined,
@@ -107,6 +110,50 @@ class BottomNavigation extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  
+  Widget _buildNotificationItem(
+    BuildContext context,
+    NavigationItem item,
+    IconData outlinedIcon,
+    IconData filledIcon,
+    String label,
+  ) {
+    final isSelected = currentItem == item;
+    
+    return Consumer<NotificationProvider>(
+      builder: (context, notificationProvider, _) {
+        return InkWell(
+          onTap: () => onItemSelected(item),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                NotificationBadge(
+                  position: const BadgePosition(top: -5, right: -8),
+                  minSize: 16,
+                  child: Icon(
+                    isSelected ? filledIcon : outlinedIcon,
+                    color: isSelected ? AppColors.primary : AppColors.onSurface.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected ? AppColors.primary : AppColors.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
