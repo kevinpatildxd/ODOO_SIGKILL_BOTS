@@ -46,8 +46,8 @@ Follow exactly as in `stackit_frontend_context.md`:
 ### Phase 4: UI Screens and Widgets 🔄
 - ✅ Build authentication screens in presentation/screens/auth/.
 - ✅ Implement home and question screens in presentation/screens/home/ and /question/.
-- 🔄 Create reusable widgets in presentation/widgets/ for questions, answers, tags, etc.
-- Add rich text editor in widgets/editor/.
+- ✅ Create reusable widgets in presentation/widgets/ for questions, answers, tags, etc.
+- 🔄 Add rich text editor in widgets/editor/.
 
 ### Phase 5: Real-time and Services
 - Set up core/services/socket_service.dart for Socket.io.
@@ -79,7 +79,9 @@ Follow exactly as in `stackit_frontend_context.md`:
   - ✅ Authentication UI completed (login, register, forgot password)
   - ✅ Home screen with bottom navigation completed
   - ✅ Question list, search, and notification screens implemented
+  - ✅ Question detail, ask question, and edit question screens implemented
+  - ✅ Answer components (list, form, card) and voting functionality
   - ✅ Common widgets created (loading, error, empty states)
-  - 🔄 Next: Question detail screen and related features
+  - 🔄 Next: Finish remaining UI components and rich text editor
 
 This plan ensures accurate, perfect implementation aligned with context. 
