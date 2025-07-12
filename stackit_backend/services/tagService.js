@@ -3,33 +3,19 @@ const Question = require('../models/Question');
 
 class TagService {
   /**
-   * Create a new tag
-   * @param {Object} tagData - Tag data
-   * @param {string} tagData.name - Tag name
-   * @param {string} [tagData.description] - Tag description
-   * @param {string} [tagData.color] - Tag color (hex code)
-   * @returns {Promise<Object>} Created tag object
+   * Get all tags with pagination and search
+   * @param {Object} options - Search options
+   * @param {number} [options.page=1] - Page number
+   * @param {number} [options.limit=50] - Number of tags per page
+   * @param {string} [options.search] - Search term
+   * @param {string} [options.sort='usage'] - Sort by ('usage', 'name', 'newest')
+   * @returns {Promise<Object>} Paginated tags
    */
-  async createTag(tagData) {
-    const { name, description, color } = tagData;
-
+  async getAllTags(options) {
     try {
-      // Check if tag already exists
-      const existingTag = await Tag.getByName(name);
-      if (existingTag) {
-        throw new Error('Tag already exists');
-      }
-
-      // Create the tag
-      const tag = await Tag.create({
-        name: name.toLowerCase(),
-        description,
-        color
-      });
-
-      return tag;
+      return await Tag.getTags(options);
     } catch (error) {
-      throw new Error(`Failed to create tag: ${error.message}`);
+      throw new Error(`Failed to get tags: ${error.message}`);
     }
   }
 
@@ -44,7 +30,6 @@ class TagService {
       if (!tag) {
         throw new Error('Tag not found');
       }
-
       return tag;
     } catch (error) {
       throw new Error(`Failed to get tag: ${error.message}`);
@@ -62,7 +47,6 @@ class TagService {
       if (!tag) {
         throw new Error('Tag not found');
       }
-
       return tag;
     } catch (error) {
       throw new Error(`Failed to get tag: ${error.message}`);
@@ -70,7 +54,23 @@ class TagService {
   }
 
   /**
-   * Update tag
+   * Create a new tag
+   * @param {Object} tagData - Tag data
+   * @param {string} tagData.name - Tag name
+   * @param {string} [tagData.description] - Tag description
+   * @param {string} [tagData.color] - Tag color (hex code)
+   * @returns {Promise<Object>} Created tag object
+   */
+  async createTag(tagData) {
+    try {
+      return await Tag.create(tagData);
+    } catch (error) {
+      throw new Error(`Failed to create tag: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update a tag
    * @param {number} id - Tag ID
    * @param {Object} tagData - Tag data to update
    * @param {string} [tagData.name] - Tag name
@@ -80,56 +80,74 @@ class TagService {
    */
   async updateTag(id, tagData) {
     try {
-      // Verify tag exists
-      const tag = await Tag.getById(id);
-      if (!tag) {
-        throw new Error('Tag not found');
-      }
-
-      // If name is being updated, check if it already exists
-      if (tagData.name && tagData.name !== tag.name) {
-        const existingTag = await Tag.getByName(tagData.name);
-        if (existingTag && existingTag.id !== id) {
-          throw new Error('Tag name already exists');
-        }
-      }
-
-      // Update the tag
-      const updatedTag = await Tag.update(id, tagData);
-      return updatedTag;
+      return await Tag.update(id, tagData);
     } catch (error) {
       throw new Error(`Failed to update tag: ${error.message}`);
     }
   }
 
   /**
-   * Delete tag
+   * Delete a tag
    * @param {number} id - Tag ID
    * @returns {Promise<boolean>} True if tag was deleted
    */
   async deleteTag(id) {
     try {
-      const deleted = await Tag.delete(id);
-      return deleted;
+      return await Tag.delete(id);
     } catch (error) {
       throw new Error(`Failed to delete tag: ${error.message}`);
     }
   }
 
   /**
-   * Get all tags with pagination and optional search
-   * @param {Object} options - Search options
-   * @param {number} [options.page=1] - Page number
-   * @param {number} [options.limit=50] - Number of tags per page
-   * @param {string} [options.search] - Search term
-   * @param {string} [options.sort='usage'] - Sort by ('usage', 'name', 'newest')
-   * @returns {Promise<Object>} Paginated tags
+   * Get tags for a question
+   * @param {number} questionId - Question ID
+   * @returns {Promise<Array<Object>>} Array of tags
    */
-  async getTags(options = {}) {
+  async getTagsForQuestion(questionId) {
     try {
-      return await Tag.getTags(options);
+      return await Tag.getTagsForQuestion(questionId);
     } catch (error) {
-      throw new Error(`Failed to get tags: ${error.message}`);
+      throw new Error(`Failed to get tags for question: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get popular tags
+   * @param {number} limit - Maximum number of tags to return
+   * @returns {Promise<Array<Object>>} Array of popular tags
+   */
+  async getPopularTags(limit = 20) {
+    try {
+      return await Tag.getPopularTags(limit);
+    } catch (error) {
+      throw new Error(`Failed to get popular tags: ${error.message}`);
+    }
+  }
+
+  /**
+   * Search tags (for autocomplete)
+   * @param {string} query - Search query
+   * @param {number} limit - Maximum number of results to return
+   * @returns {Promise<Array<Object>>} Array of matching tags
+   */
+  async searchTags(query, limit = 10) {
+    try {
+      // Using DB query directly for this specific search functionality
+      const db = require('../config/database');
+      
+      const result = await db.query(
+        `SELECT id, name, description, color, usage_count 
+         FROM tags 
+         WHERE name ILIKE $1
+         ORDER BY usage_count DESC, name ASC
+         LIMIT $2`,
+        [`%${query}%`, limit]
+      );
+      
+      return result.rows;
+    } catch (error) {
+      throw new Error(`Failed to search tags: ${error.message}`);
     }
   }
 
@@ -137,19 +155,11 @@ class TagService {
    * Add tags to a question
    * @param {number} questionId - Question ID
    * @param {Array<string>} tagNames - Array of tag names
-   * @returns {Promise<Array>} Array of associated tags
+   * @returns {Promise<Array<Object>>} Array of added tags
    */
   async addTagsToQuestion(questionId, tagNames) {
     try {
-      // Verify question exists
-      const question = await Question.getById(questionId);
-      if (!question) {
-        throw new Error('Question not found');
-      }
-
-      // Add tags to the question
-      const tags = await Tag.addTagsToQuestion(questionId, tagNames);
-      return tags;
+      return await Tag.addTagsToQuestion(questionId, tagNames);
     } catch (error) {
       throw new Error(`Failed to add tags to question: ${error.message}`);
     }
@@ -163,57 +173,9 @@ class TagService {
    */
   async removeTagFromQuestion(questionId, tagId) {
     try {
-      // Verify question exists
-      const question = await Question.getById(questionId);
-      if (!question) {
-        throw new Error('Question not found');
-      }
-
-      // Verify tag exists
-      const tag = await Tag.getById(tagId);
-      if (!tag) {
-        throw new Error('Tag not found');
-      }
-
-      // Remove the tag from the question
-      const removed = await Tag.removeTagFromQuestion(questionId, tagId);
-      return removed;
+      return await Tag.removeTagFromQuestion(questionId, tagId);
     } catch (error) {
       throw new Error(`Failed to remove tag from question: ${error.message}`);
-    }
-  }
-
-  /**
-   * Get tags for a question
-   * @param {number} questionId - Question ID
-   * @returns {Promise<Array>} Array of tags
-   */
-  async getTagsForQuestion(questionId) {
-    try {
-      // Verify question exists
-      const question = await Question.getById(questionId);
-      if (!question) {
-        throw new Error('Question not found');
-      }
-
-      // Get tags for the question
-      const tags = await Tag.getTagsForQuestion(questionId);
-      return tags;
-    } catch (error) {
-      throw new Error(`Failed to get tags for question: ${error.message}`);
-    }
-  }
-
-  /**
-   * Get popular tags
-   * @param {number} [limit=20] - Maximum number of tags to return
-   * @returns {Promise<Array>} Array of popular tags
-   */
-  async getPopularTags(limit = 20) {
-    try {
-      return await Tag.getPopularTags(limit);
-    } catch (error) {
-      throw new Error(`Failed to get popular tags: ${error.message}`);
     }
   }
 
