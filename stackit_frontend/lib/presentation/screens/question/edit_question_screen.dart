@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stackit_frontend/data/models/question_model.dart';
 import 'package:stackit_frontend/presentation/providers/auth_provider.dart';
 import 'package:stackit_frontend/presentation/providers/question_provider.dart';
 import 'package:stackit_frontend/presentation/routes/app_routes.dart';

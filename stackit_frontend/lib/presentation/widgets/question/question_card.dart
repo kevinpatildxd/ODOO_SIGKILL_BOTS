@@ -74,7 +74,7 @@ class QuestionCard extends StatelessWidget {
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.secondary.withOpacity(0.1),
+                color: AppColors.secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -91,7 +91,7 @@ class QuestionCard extends StatelessWidget {
             margin: const EdgeInsets.only(right: 8),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -139,7 +139,7 @@ class QuestionCard extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: AppColors.onSurface.withOpacity(0.6),
+          color: AppColors.onSurface.withValues(alpha: 0.6),
         ),
         const SizedBox(width: 4),
         Text(
@@ -147,7 +147,7 @@ class QuestionCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: AppColors.onSurface.withOpacity(0.8),
+            color: AppColors.onSurface.withValues(alpha: 0.8),
           ),
         ),
       ],
@@ -191,7 +191,7 @@ class QuestionCard extends StatelessWidget {
               date_utils.DateUtils.formatTimeAgo(question.createdAt),
               style: TextStyle(
                 fontSize: 10,
-                color: AppColors.onSurface.withOpacity(0.6),
+                color: AppColors.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],

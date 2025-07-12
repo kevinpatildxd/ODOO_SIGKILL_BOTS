@@ -29,7 +29,7 @@ class BottomNavigation extends StatelessWidget {
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -96,7 +96,7 @@ class BottomNavigation extends StatelessWidget {
           children: [
             Icon(
               isSelected ? filledIcon : outlinedIcon,
-              color: isSelected ? AppColors.primary : AppColors.onSurface.withOpacity(0.6),
+              color: isSelected ? AppColors.primary : AppColors.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 4),
             Text(
@@ -104,7 +104,7 @@ class BottomNavigation extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? AppColors.primary : AppColors.onSurface.withOpacity(0.6),
+                color: isSelected ? AppColors.primary : AppColors.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -137,7 +137,7 @@ class BottomNavigation extends StatelessWidget {
                   minSize: 16,
                   child: Icon(
                     isSelected ? filledIcon : outlinedIcon,
-                    color: isSelected ? AppColors.primary : AppColors.onSurface.withOpacity(0.6),
+                    color: isSelected ? AppColors.primary : AppColors.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -146,7 +146,7 @@ class BottomNavigation extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: isSelected ? AppColors.primary : AppColors.onSurface.withOpacity(0.6),
+                    color: isSelected ? AppColors.primary : AppColors.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               ],

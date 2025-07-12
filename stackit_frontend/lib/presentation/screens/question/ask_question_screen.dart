@@ -212,7 +212,7 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
                       'Select tags that best describe your question (at least one)',
                       style: TextStyle(
                         fontSize: 14,
-                        color: AppColors.onSurface.withOpacity(0.7),
+                        color: AppColors.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -262,7 +262,7 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
           selected: isSelected,
           onSelected: (_) => _toggleTag(tagName),
           backgroundColor: AppColors.surface,
-          selectedColor: AppColors.primary.withOpacity(0.2),
+          selectedColor: AppColors.primary.withValues(alpha: 0.2),
           checkmarkColor: AppColors.primary,
           labelStyle: TextStyle(
             color: isSelected ? AppColors.primary : AppColors.onSurface,

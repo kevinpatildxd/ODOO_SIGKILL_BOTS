@@ -18,35 +18,35 @@ class NetworkException implements Exception {
       case DioExceptionType.connectionTimeout:
         return NetworkException(
           message: 'Connection timeout. Please try again.',
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         );
       case DioExceptionType.sendTimeout:
         return NetworkException(
           message: 'Send timeout. Please try again.',
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         );
       case DioExceptionType.receiveTimeout:
         return NetworkException(
           message: 'Receive timeout. Please try again.',
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         );
       case DioExceptionType.badResponse:
         return _handleBadResponse(error);
       case DioExceptionType.cancel:
         return NetworkException(
           message: 'Request was cancelled.',
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         );
       case DioExceptionType.connectionError:
         return NetworkException(
           message: 'Connection error. Please check your internet connection.',
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         );
       case DioExceptionType.unknown:
       default:
         return NetworkException(
           message: error.message ?? 'Something went wrong. Please try again.',
-          stackTrace: error.stackTrace?.toString(),
+          stackTrace: error.stackTrace.toString(),
         );
     }
   }
@@ -78,7 +78,7 @@ class NetworkException implements Exception {
     return NetworkException(
       message: message,
       statusCode: statusCode,
-      stackTrace: error.stackTrace?.toString(),
+      stackTrace: error.stackTrace.toString(),
     );
   }
 

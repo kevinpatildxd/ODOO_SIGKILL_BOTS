@@ -14,7 +14,7 @@ class RichTextEditor extends StatefulWidget {
   final bool showToolbar;
 
   const RichTextEditor({
-    Key? key,
+    super.key,
     this.initialContent = '',
     required this.onContentChanged,
     this.height = 300,
@@ -23,7 +23,7 @@ class RichTextEditor extends StatefulWidget {
     this.focusNode,
     this.readOnly = false,
     this.showToolbar = true,
-  }) : super(key: key);
+  });
 
   @override
   State<RichTextEditor> createState() => _RichTextEditorState();

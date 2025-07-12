@@ -97,10 +97,8 @@ class TagProvider extends ChangeNotifier {
     // First check if we already have the tag in our lists
     Tag? tag = _allTags.firstWhere((t) => t.id == id, orElse: () => _tags.firstWhere((t) => t.id == id, orElse: () => null));
     
-    if (tag != null) {
-      return tag;
-    }
-    
+    return tag;
+      
     _status = TagStatus.loading;
     _errorMessage = '';
     notifyListeners();

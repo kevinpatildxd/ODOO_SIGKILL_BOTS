@@ -103,7 +103,7 @@ class _NotificationListState extends State<NotificationList> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
             side: BorderSide(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             ),
           ),
         ),
@@ -142,8 +142,8 @@ class _NotificationListState extends State<NotificationList> {
       return const Center(
         child: EmptyStateWidget(
           icon: Icons.notifications_none,
-          message: 'No notifications yet',
-          subMessage: 'When you receive notifications, they\'ll appear here',
+          title: 'No notifications yet',
+          message: 'When you receive notifications, they\'ll appear here',
         ),
       );
     }

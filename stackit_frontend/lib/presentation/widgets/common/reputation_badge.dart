@@ -22,11 +22,11 @@ class ReputationBadge extends StatelessWidget {
   /// The [initialReputation] parameter defaults to 0.
   /// The [showIcon] parameter defaults to true.
   const ReputationBadge({
-    Key? key,
+    super.key,
     required this.userId,
     this.initialReputation = 0,
     this.showIcon = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

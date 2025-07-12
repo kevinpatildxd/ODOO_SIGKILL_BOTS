@@ -9,12 +9,12 @@ class EditorToolbar extends StatelessWidget {
   final bool showLink;
 
   const EditorToolbar({
-    Key? key,
+    super.key,
     required this.controller,
     this.showInlineCode = true,
     this.showCodeBlock = true,
     this.showLink = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

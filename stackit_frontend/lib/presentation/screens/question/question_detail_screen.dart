@@ -13,7 +13,6 @@ import 'package:stackit_frontend/presentation/widgets/answer/answer_form.dart';
 import 'package:stackit_frontend/presentation/widgets/answer/answer_list.dart';
 import 'package:stackit_frontend/presentation/widgets/answer/vote_widget.dart';
 import 'package:stackit_frontend/presentation/widgets/common/loading_widget.dart';
-import 'package:stackit_frontend/presentation/widgets/common/error_widget.dart';
 
 class QuestionDetailScreen extends StatefulWidget {
   const QuestionDetailScreen({super.key});
@@ -252,7 +251,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
               'Asked ${date_utils.DateUtils.formatTimeAgo(question.createdAt)}',
               style: TextStyle(
                 fontSize: 12,
-                color: AppColors.onSurface.withOpacity(0.6),
+                color: AppColors.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -313,7 +312,7 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(

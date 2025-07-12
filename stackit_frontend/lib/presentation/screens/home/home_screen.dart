@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stackit_frontend/config/theme.dart';
 import 'package:stackit_frontend/presentation/providers/auth_provider.dart';
 import 'package:stackit_frontend/presentation/widgets/common/bottom_navigation.dart';
 import 'package:stackit_frontend/presentation/routes/app_routes.dart';

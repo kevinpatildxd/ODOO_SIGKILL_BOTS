@@ -21,11 +21,11 @@ class OnlineStatusIndicator extends StatelessWidget {
   /// The [size] parameter defaults to 10.0.
   /// The [strokeWidth] parameter defaults to 1.0.
   const OnlineStatusIndicator({
-    Key? key,
+    super.key,
     required this.userId,
     this.size = 10.0,
     this.strokeWidth = 1.0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:stackit_frontend/config/theme.dart';
 import 'package:stackit_frontend/data/models/answer_model.dart';
 import 'package:stackit_frontend/core/utils/date_utils.dart' as date_utils;
@@ -71,7 +70,7 @@ class AnswerCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.success.withOpacity(0.1),
+        color: AppColors.success.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.success),
       ),
@@ -124,7 +123,7 @@ class AnswerCard extends StatelessWidget {
           'answered ${date_utils.DateUtils.formatTimeAgo(answer.createdAt)}',
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.onSurface.withOpacity(0.6),
+            color: AppColors.onSurface.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(width: 8),

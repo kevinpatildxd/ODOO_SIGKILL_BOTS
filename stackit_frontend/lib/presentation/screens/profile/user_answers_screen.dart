@@ -152,8 +152,8 @@ class _UserAnswersScreenState extends State<UserAnswersScreen> {
       return const Center(
         child: EmptyStateWidget(
           icon: Icons.comment,
-          message: "You haven't answered any questions yet",
-          subMessage: "Answers you provide will appear here",
+          title: "You haven't answered any questions yet",
+          message: "Answers you provide will appear here",
         ),
       );
     }

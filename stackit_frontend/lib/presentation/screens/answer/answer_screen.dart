@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stackit_frontend/data/models/answer_request.dart';
 import 'package:stackit_frontend/data/models/question_model.dart';
 import 'package:stackit_frontend/presentation/providers/answer_provider.dart';
-import 'package:stackit_frontend/presentation/widgets/answer/answer_form.dart';
 import 'package:stackit_frontend/presentation/widgets/common/app_bar.dart';
 import 'package:stackit_frontend/presentation/widgets/common/loading_widget.dart';
-import 'package:stackit_frontend/presentation/widgets/common/error_widget.dart';
 import 'package:stackit_frontend/presentation/widgets/editor/rich_text_editor.dart';
 
 class AnswerScreen extends StatefulWidget {
-  const AnswerScreen({Key? key}) : super(key: key);
+  const AnswerScreen({super.key});
 
   @override
   State<AnswerScreen> createState() => _AnswerScreenState();

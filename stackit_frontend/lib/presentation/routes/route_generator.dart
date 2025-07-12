@@ -38,10 +38,10 @@ class AuthGuard extends StatelessWidget {
   final dynamic routeArguments;
 
   const AuthGuard({
-    Key? key,
+    super.key,
     required this.routeName,
     this.routeArguments,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

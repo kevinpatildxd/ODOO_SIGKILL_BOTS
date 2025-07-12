@@ -15,9 +15,9 @@ class TypingIndicator extends StatelessWidget {
   ///
   /// The [questionId] parameter is required and must not be null.
   const TypingIndicator({
-    Key? key,
+    super.key,
     required this.questionId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ class TypingIndicator extends StatelessWidget {
 
 /// An animated dots typing indicator.
 class _DotPulse extends StatefulWidget {
-  const _DotPulse({Key? key}) : super(key: key);
+  const _DotPulse();
 
   @override
   _DotPulseState createState() => _DotPulseState();
@@ -142,7 +142,7 @@ class _DotPulseState extends State<_DotPulse> with SingleTickerProviderStateMixi
               height: 6.0,
               margin: const EdgeInsets.symmetric(horizontal: 2.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(
+                color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 
                   0.3 + (animation.value * 0.7),
                 ),
                 shape: BoxShape.circle,

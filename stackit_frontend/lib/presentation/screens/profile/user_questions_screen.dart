@@ -152,8 +152,8 @@ class _UserQuestionsScreenState extends State<UserQuestionsScreen> {
       return const Center(
         child: EmptyStateWidget(
           icon: Icons.question_answer,
-          message: "You haven't asked any questions yet",
-          subMessage: "Questions you ask will appear here",
+          title: "You haven't asked any questions yet",
+          message: "Questions you ask will appear here",
         ),
       );
     }

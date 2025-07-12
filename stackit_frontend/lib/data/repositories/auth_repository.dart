@@ -1,7 +1,6 @@
 import 'package:stackit_frontend/core/network/network_exceptions.dart';
 import 'package:stackit_frontend/data/datasources/auth_datasource.dart';
 import 'package:stackit_frontend/data/models/auth_request.dart';
-import 'package:stackit_frontend/data/models/auth_response.dart';
 import 'package:stackit_frontend/data/models/user_model.dart';
 
 class AuthRepository {

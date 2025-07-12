@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:stackit_frontend/core/services/socket_service.dart';
 import 'package:stackit_frontend/core/services/storage_service.dart';
-import 'package:stackit_frontend/data/models/user_model.dart';
 
 /// A service that manages user presence and activity features.
 ///

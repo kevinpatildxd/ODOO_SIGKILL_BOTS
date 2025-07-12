@@ -46,12 +46,12 @@ class NotificationCard extends StatelessWidget {
       child: Card(
         elevation: 1.0,
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        color: notification.isRead ? null : theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: notification.isRead ? null : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
           side: notification.isRead 
               ? BorderSide.none 
-              : BorderSide(color: theme.colorScheme.primary.withOpacity(0.2)),
+              : BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.2)),
         ),
         child: InkWell(
           onTap: () {
@@ -96,7 +96,7 @@ class NotificationCard extends StatelessWidget {
                       Text(
                         _formatDate(notification.createdAt),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                           fontSize: 11.0,
                         ),
                       ),
@@ -153,7 +153,7 @@ class NotificationCard extends StatelessWidget {
       height: 40.0,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: iconColor.withOpacity(0.1),
+        color: iconColor.withValues(alpha: 0.1),
       ),
       child: Center(
         child: Icon(

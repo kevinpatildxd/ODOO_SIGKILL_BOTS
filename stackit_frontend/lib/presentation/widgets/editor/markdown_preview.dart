@@ -9,11 +9,11 @@ class MarkdownPreview extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const MarkdownPreview({
-    Key? key,
+    super.key,
     required this.content,
     this.height,
     this.padding = const EdgeInsets.all(16.0),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -134,12 +134,12 @@ class EditorWithPreview extends StatefulWidget {
   final String? placeholder;
 
   const EditorWithPreview({
-    Key? key,
+    super.key,
     this.initialContent = '',
     required this.onContentChanged,
     this.height = 300,
     this.placeholder,
-  }) : super(key: key);
+  });
 
   @override
   State<EditorWithPreview> createState() => _EditorWithPreviewState();

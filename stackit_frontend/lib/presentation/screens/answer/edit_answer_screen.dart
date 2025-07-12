@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stackit_frontend/data/models/answer_model.dart';
-import 'package:stackit_frontend/data/models/answer_request.dart';
 import 'package:stackit_frontend/presentation/providers/answer_provider.dart';
 import 'package:stackit_frontend/presentation/widgets/common/app_bar.dart';
 import 'package:stackit_frontend/presentation/widgets/common/loading_widget.dart';
-import 'package:stackit_frontend/presentation/widgets/common/error_widget.dart';
 import 'package:stackit_frontend/presentation/widgets/editor/rich_text_editor.dart';
 
 class EditAnswerScreen extends StatefulWidget {
-  const EditAnswerScreen({Key? key}) : super(key: key);
+  const EditAnswerScreen({super.key});
 
   @override
   State<EditAnswerScreen> createState() => _EditAnswerScreenState();

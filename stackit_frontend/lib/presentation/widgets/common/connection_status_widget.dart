@@ -8,7 +8,7 @@ import 'package:stackit_frontend/core/services/socket_service.dart';
 /// and provides visual feedback when connection is lost or restored.
 class ConnectionStatusWidget extends StatelessWidget {
   /// Creates a [ConnectionStatusWidget].
-  const ConnectionStatusWidget({Key? key}) : super(key: key);
+  const ConnectionStatusWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class ConnectionStatusWidget extends StatelessWidget {
                       socketService.connect();
                     },
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8.0,
                         vertical: 4.0,
@@ -78,7 +78,7 @@ class ConnectionStatusWidget extends StatelessWidget {
 /// a corner of the screen, suitable for persistent display.
 class ConnectionStatusDot extends StatelessWidget {
   /// Creates a [ConnectionStatusDot].
-  const ConnectionStatusDot({Key? key}) : super(key: key);
+  const ConnectionStatusDot({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:stackit_frontend/core/network/network_exceptions.dart';
 import 'package:stackit_frontend/data/models/answer_model.dart';
-import 'package:stackit_frontend/data/models/paginated_response.dart';
 import 'package:stackit_frontend/data/repositories/answer_repository.dart';
 import 'package:stackit_frontend/core/services/socket_service.dart';
 
