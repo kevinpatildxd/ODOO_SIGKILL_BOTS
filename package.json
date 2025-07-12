@@ -1,0 +1,15 @@
+{
+  "name": "odoo-sigkill-bots",
+  "version": "1.0.0",
+  "description": "StackIt - Backend and Frontend",
+  "scripts": {
+    "start:backend": "cd stackit_backend && npm start",
+    "start:frontend": "cd stackit_frontend && flutter run",
+    "install:backend": "cd stackit_backend && npm install",
+    "test:backend": "cd stackit_backend && npm test"
+  },
+  "private": true,
+  "workspaces": [
+    "stackit_backend"
+  ]
+} 
