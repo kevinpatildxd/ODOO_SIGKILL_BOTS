@@ -1,36 +1,77 @@
 /**
- * Jest test setup file
- * This file sets up the test environment before running tests
+ * Jest setup file
+ * This file runs before each test suite
  */
 
-// Set environment variables for testing
-process.env.NODE_ENV = 'test';
-process.env.JWT_SECRET = 'test-jwt-secret';
-process.env.PORT = 5000;
-
-// Mock database connection
+// Mock database module
 jest.mock('../config/database', () => {
-  // Create a mock database module
-  const mockDb = {
-    query: jest.fn().mockImplementation((text, params) => {
-      // Default mock behavior for any query
-      return Promise.resolve({ rows: [], rowCount: 0 });
+  return {
+    query: jest.fn().mockImplementation(() => ({
+      rows: [{ id: 1, username: 'testuser', email: 'test@example.com' }],
+      rowCount: 1
+    })),
+    pool: {
+      connect: jest.fn(),
+      query: jest.fn(),
+      end: jest.fn(),
+      on: jest.fn()
+    },
+    getClient: jest.fn().mockReturnValue({
+      query: jest.fn(),
+      release: jest.fn()
     }),
-    connectDB: jest.fn().mockResolvedValue(),
-    closeDB: jest.fn().mockResolvedValue(),
+    transaction: jest.fn(),
+    batch: jest.fn(),
+    checkPoolHealth: jest.fn().mockResolvedValue({ status: 'healthy' })
   };
-
-  return mockDb;
 });
 
-// Silence console logs during tests unless in verbose mode
-if (!process.env.VERBOSE) {
-  global.console = {
-    ...console,
-    log: jest.fn(),
-    debug: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    error: jest.fn(),
+// Mock other services and utilities
+jest.mock('../utils/caching', () => {
+  return {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+    clear: jest.fn(),
+    stats: jest.fn().mockReturnValue({ hits: 0, misses: 0 }),
+    keys: jest.fn(),
+    DEFAULT_TTL: 300,
+    cacheMiddleware: (ttl, keyFn) => (req, res, next) => next()
   };
-} 
+});
+
+jest.mock('../config/jwt', () => {
+  return {
+    JWT_SECRET: 'test-secret',
+    JWT_EXPIRES_IN: '1h',
+    generateToken: jest.fn().mockReturnValue('mocked-jwt-token'),
+    verifyToken: jest.fn().mockReturnValue({
+      userId: 1,
+      username: 'testuser',
+      role: 'user'
+    }),
+    extractTokenFromHeader: jest.fn().mockReturnValue('mocked-jwt-token')
+  };
+});
+
+jest.mock('../utils/logger', () => {
+  return {
+    info: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn()
+  };
+});
+
+// Setup global test environment
+process.env.NODE_ENV = 'test';
+
+// Silence console during tests
+global.console = {
+  ...console,
+  log: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
+}; 

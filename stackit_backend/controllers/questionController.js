@@ -42,6 +42,99 @@ class QuestionController {
       next(error);
     }
   }
+  
+  /**
+   * Get popular questions sorted by votes and view count
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async getPopularQuestions(req, res, next) {
+    try {
+      const { 
+        page = 1, 
+        limit = 10,
+        timeframe = 'week' // day, week, month, year, all
+      } = req.query;
+      
+      const result = await questionService.getPopularQuestions({
+        page: parseInt(page),
+        limit: parseInt(limit),
+        timeframe
+      });
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: result,
+        message: 'Popular questions retrieved successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  /**
+   * Get recent questions sorted by creation date
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async getRecentQuestions(req, res, next) {
+    try {
+      const { 
+        page = 1, 
+        limit = 10
+      } = req.query;
+      
+      const result = await questionService.getRecentQuestions({
+        page: parseInt(page),
+        limit: parseInt(limit)
+      });
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: result,
+        message: 'Recent questions retrieved successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  /**
+   * Search questions by query string
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async searchQuestions(req, res, next) {
+    try {
+      const { 
+        q = '', 
+        page = 1, 
+        limit = 10,
+        tags = []
+      } = req.query;
+      
+      // Convert tags to array if it's a string
+      const tagsArray = Array.isArray(tags) ? tags : tags ? [tags] : [];
+      
+      const result = await questionService.searchQuestions({
+        query: q,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        tags: tagsArray
+      });
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: result,
+        message: 'Search results retrieved successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   /**
    * Get a question by ID
@@ -58,6 +151,46 @@ class QuestionController {
         success: true,
         data: result,
         message: 'Question retrieved successfully'
+      });
+    } catch (error) {
+      if (error.message === 'Question not found') {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
+          success: false,
+          message: 'Question not found'
+        });
+      }
+      next(error);
+    }
+  }
+  
+  /**
+   * Get answers for a specific question
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async getQuestionAnswers(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { 
+        page = 1, 
+        limit = 10,
+        sort = 'votes' // votes, date
+      } = req.query;
+      
+      const result = await questionService.getQuestionAnswers(
+        parseInt(id),
+        {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          sort
+        }
+      );
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: result,
+        message: 'Question answers retrieved successfully'
       });
     } catch (error) {
       if (error.message === 'Question not found') {
@@ -121,6 +254,40 @@ class QuestionController {
         message: 'Question created successfully'
       });
     } catch (error) {
+      next(error);
+    }
+  }
+  
+  /**
+   * Create an answer for a specific question
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async createAnswer(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { content } = req.body;
+      const userId = req.user.userId;
+
+      const result = await questionService.createAnswer({
+        question_id: parseInt(id),
+        user_id: userId,
+        content
+      });
+
+      res.status(HTTP_STATUS.CREATED).json({
+        success: true,
+        data: result,
+        message: 'Answer created successfully'
+      });
+    } catch (error) {
+      if (error.message === 'Question not found') {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
+          success: false,
+          message: 'Question not found'
+        });
+      }
       next(error);
     }
   }
@@ -218,25 +385,26 @@ class QuestionController {
   }
 
   /**
-   * Get questions by a specific tag
+   * Get questions by tag
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    * @param {Function} next - Express next middleware function
    */
   async getQuestionsByTag(req, res, next) {
     try {
-      const { tag } = req.params;
+      const { tagName } = req.params;
       const { page = 1, limit = 10 } = req.query;
 
-      const result = await questionService.getQuestionsByTag(tag, {
-        page: parseInt(page),
-        limit: parseInt(limit)
-      });
+      const result = await questionService.getQuestionsByTag(
+        tagName,
+        parseInt(page),
+        parseInt(limit)
+      );
 
       res.status(HTTP_STATUS.OK).json({
         success: true,
         data: result,
-        message: 'Questions retrieved successfully'
+        message: `Questions with tag '${tagName}' retrieved successfully`
       });
     } catch (error) {
       next(error);
@@ -254,17 +422,58 @@ class QuestionController {
       const { userId } = req.params;
       const { page = 1, limit = 10 } = req.query;
 
-      const result = await questionService.getQuestionsByUser(parseInt(userId), {
-        page: parseInt(page),
-        limit: parseInt(limit)
-      });
+      const result = await questionService.getQuestionsByUser(
+        parseInt(userId),
+        parseInt(page),
+        parseInt(limit)
+      );
 
       res.status(HTTP_STATUS.OK).json({
         success: true,
         data: result,
-        message: 'Questions retrieved successfully'
+        message: 'Questions by user retrieved successfully'
       });
     } catch (error) {
+      next(error);
+    }
+  }
+  
+  /**
+   * Vote on a question
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async voteQuestion(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { vote_type } = req.body;
+      const userId = req.user.userId;
+
+      const result = await questionService.voteQuestion(
+        parseInt(id),
+        userId,
+        vote_type
+      );
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: result,
+        message: 'Vote recorded successfully'
+      });
+    } catch (error) {
+      if (error.message === 'Question not found') {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
+          success: false,
+          message: 'Question not found'
+        });
+      }
+      if (error.message === 'Cannot vote on your own question') {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
+          success: false,
+          message: 'Cannot vote on your own question'
+        });
+      }
       next(error);
     }
   }
@@ -278,12 +487,26 @@ class QuestionController {
   async acceptAnswer(req, res, next) {
     try {
       const { questionId, answerId } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.userId;
+      const userRole = req.user.role;
+
+      // Check if user can accept answers for this question
+      const canAccept = await questionService.canAcceptAnswer(
+        parseInt(questionId),
+        userId,
+        userRole
+      );
+
+      if (!canAccept) {
+        return res.status(HTTP_STATUS.FORBIDDEN).json({
+          success: false,
+          message: 'You do not have permission to accept answers for this question'
+        });
+      }
 
       const result = await questionService.acceptAnswer(
         parseInt(questionId),
-        parseInt(answerId),
-        userId
+        parseInt(answerId)
       );
 
       res.status(HTTP_STATUS.OK).json({
@@ -298,10 +521,64 @@ class QuestionController {
           message: 'Question not found'
         });
       }
-      if (error.message === 'Only the question author can accept an answer') {
-        return res.status(HTTP_STATUS.FORBIDDEN).json({
+      if (error.message === 'Answer not found') {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
           success: false,
-          message: 'Only the question author can accept an answer'
+          message: 'Answer not found'
+        });
+      }
+      next(error);
+    }
+  }
+  
+  /**
+   * Get question view count
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async getQuestionViewCount(req, res, next) {
+    try {
+      const { id } = req.params;
+      const count = await questionService.getQuestionViewCount(parseInt(id));
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: { count },
+        message: 'View count retrieved successfully'
+      });
+    } catch (error) {
+      if (error.message === 'Question not found') {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
+          success: false,
+          message: 'Question not found'
+        });
+      }
+      next(error);
+    }
+  }
+  
+  /**
+   * Increment question view count
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   */
+  async incrementViewCount(req, res, next) {
+    try {
+      const { id } = req.params;
+      const newCount = await questionService.incrementViewCount(parseInt(id));
+
+      res.status(HTTP_STATUS.OK).json({
+        success: true,
+        data: { count: newCount },
+        message: 'View count incremented successfully'
+      });
+    } catch (error) {
+      if (error.message === 'Question not found') {
+        return res.status(HTTP_STATUS.NOT_FOUND).json({
+          success: false,
+          message: 'Question not found'
         });
       }
       next(error);
@@ -317,17 +594,29 @@ class QuestionController {
   async unacceptAnswer(req, res, next) {
     try {
       const { questionId } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.userId;
+      const userRole = req.user.role;
 
-      const result = await questionService.unacceptAnswer(
+      // Check if user can accept answers for this question
+      const canAccept = await questionService.canAcceptAnswer(
         parseInt(questionId),
-        userId
+        userId,
+        userRole
       );
+
+      if (!canAccept) {
+        return res.status(HTTP_STATUS.FORBIDDEN).json({
+          success: false,
+          message: 'You do not have permission to unaccept answers for this question'
+        });
+      }
+
+      const result = await questionService.unacceptAnswer(parseInt(questionId));
 
       res.status(HTTP_STATUS.OK).json({
         success: true,
         data: result,
-        message: 'Answer acceptance removed successfully'
+        message: 'Answer unaccepted successfully'
       });
     } catch (error) {
       if (error.message === 'Question not found') {
@@ -336,10 +625,10 @@ class QuestionController {
           message: 'Question not found'
         });
       }
-      if (error.message === 'Only the question author can unaccept an answer') {
-        return res.status(HTTP_STATUS.FORBIDDEN).json({
+      if (error.message === 'No accepted answer to unaccept') {
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
-          message: 'Only the question author can unaccept an answer'
+          message: 'No accepted answer to unaccept'
         });
       }
       next(error);
