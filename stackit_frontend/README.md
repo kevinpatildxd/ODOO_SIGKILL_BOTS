@@ -4,8 +4,8 @@ Flutter mobile application for the StackIt Q&A platform.
 
 ## Setup
 1. Install Flutter SDK
-2. Install dependencies: lutter pub get
-3. Run the app: lutter run
+2. Install dependencies: Flutter pub get
+3. Run the app: Flutter run
 
 ## Architecture
 - **State Management**: Provider/Riverpod

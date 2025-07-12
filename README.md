@@ -6,7 +6,7 @@ A collaborative learning platform built with Flutter (Frontend) and Node.js (Bac
 
 ### Project Structure
 - stackit_backend/ - Node.js REST API with Socket.io
-- stackit_frontend/ - Flutter mobile application
+- stackit_frontend/ - Flutter application
 - docs/ - Project documentation
 
 ### Getting Started
