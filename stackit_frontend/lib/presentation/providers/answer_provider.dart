@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:stackit_frontend/core/network/network_exceptions.dart';
 import 'package:stackit_frontend/data/models/answer_model.dart';
 import 'package:stackit_frontend/data/models/paginated_response.dart';
 import 'package:stackit_frontend/data/repositories/answer_repository.dart';
+import 'package:stackit_frontend/core/services/socket_service.dart';
 
 enum AnswerStatus { initial, loading, success, error }
 
 class AnswerProvider extends ChangeNotifier {
   final AnswerRepository _repository;
+  final SocketService _socketService = SocketService();
   
   AnswerStatus _status = AnswerStatus.initial;
   List<Answer> _answers = [];
@@ -17,7 +20,115 @@ class AnswerProvider extends ChangeNotifier {
   bool _hasMore = true;
   int? _currentQuestionId;
   
-  AnswerProvider(this._repository);
+  // Stream subscription for socket events
+  StreamSubscription? _answerStreamSubscription;
+  
+  AnswerProvider(this._repository) {
+    // Listen to real-time answer updates
+    _setupSocketListeners();
+  }
+  
+  // Setup socket event listeners
+  void _setupSocketListeners() {
+    _answerStreamSubscription = _socketService.answerStream.listen(_handleAnswerEvent);
+  }
+  
+  // Handle incoming answer events
+  void _handleAnswerEvent(Map<String, dynamic> event) {
+    final eventType = event['type'];
+    final eventData = event['data'];
+    
+    if (kDebugMode) {
+      print('Received answer event: $eventType');
+    }
+    
+    switch (eventType) {
+      case 'new':
+        _handleNewAnswer(Answer.fromJson(eventData));
+        break;
+      case 'update':
+        _handleAnswerUpdate(Answer.fromJson(eventData));
+        break;
+      case 'vote':
+        _handleAnswerVoteUpdate(eventData);
+        break;
+      case 'accept':
+        _handleAnswerAccept(Answer.fromJson(eventData));
+        break;
+      case 'delete':
+        _handleAnswerDelete(eventData['id']);
+        break;
+      default:
+        if (kDebugMode) {
+          print('Unknown answer event type: $eventType');
+        }
+    }
+  }
+  
+  // Handle a new answer event
+  void _handleNewAnswer(Answer answer) {
+    // Only add if related to current question and not already in list
+    if (_currentQuestionId == answer.questionId && 
+        !_answers.any((a) => a.id == answer.id)) {
+      _answers.insert(0, answer);
+      notifyListeners();
+    }
+  }
+  
+  // Handle an answer update event
+  void _handleAnswerUpdate(Answer updatedAnswer) {
+    // Only update if related to current question
+    if (_currentQuestionId == updatedAnswer.questionId) {
+      final index = _answers.indexWhere((a) => a.id == updatedAnswer.id);
+      if (index != -1) {
+        _answers[index] = updatedAnswer;
+        notifyListeners();
+      }
+    }
+  }
+  
+  // Handle an answer vote update event
+  void _handleAnswerVoteUpdate(Map<String, dynamic> voteData) {
+    final answerId = voteData['answerId'];
+    final newVoteCount = voteData['voteCount'];
+    
+    final index = _answers.indexWhere((a) => a.id == answerId);
+    if (index != -1) {
+      _answers[index] = _answers[index].copyWith(votes: newVoteCount);
+      notifyListeners();
+    }
+  }
+  
+  // Handle an answer accept event
+  void _handleAnswerAccept(Answer acceptedAnswer) {
+    // Only update if related to current question
+    if (_currentQuestionId == acceptedAnswer.questionId) {
+      // Update the accepted answer and unaccept any previously accepted answers
+      bool updated = false;
+      for (int i = 0; i < _answers.length; i++) {
+        if (_answers[i].id == acceptedAnswer.id) {
+          _answers[i] = acceptedAnswer;
+          updated = true;
+        } else if (_answers[i].isAccepted) {
+          _answers[i] = _answers[i].copyWith(isAccepted: false);
+          updated = true;
+        }
+      }
+      
+      if (updated) {
+        notifyListeners();
+      }
+    }
+  }
+  
+  // Handle an answer delete event
+  void _handleAnswerDelete(int answerId) {
+    final index = _answers.indexWhere((a) => a.id == answerId);
+    if (index != -1) {
+      _answers.removeAt(index);
+      notifyListeners();
+    }
+  }
   
   // Getters
   AnswerStatus get status => _status;
@@ -33,7 +144,16 @@ class AnswerProvider extends ChangeNotifier {
       _currentPage = 1;
       _answers = [];
       _hasMore = true;
+      
+      // If we're changing questions, leave old room and join new one
+      if (_currentQuestionId != null && _currentQuestionId != questionId) {
+        _socketService.leaveRoom('question:$_currentQuestionId');
+      }
+      
       _currentQuestionId = questionId;
+      
+      // Join the room for this question's answers
+      _socketService.joinRoom('question:$questionId');
     }
     
     if (_status == AnswerStatus.loading || !_hasMore) {
@@ -78,7 +198,11 @@ class AnswerProvider extends ChangeNotifier {
     
     try {
       final newAnswer = await _repository.createAnswer(questionId, content);
+      
+      // Optimistic update - we'll add it to the UI immediately
+      // The socket event will update other users' views
       _answers.insert(0, newAnswer);
+      
       _status = AnswerStatus.success;
     } catch (e) {
       _status = AnswerStatus.error;
@@ -150,19 +274,7 @@ class AnswerProvider extends ChangeNotifier {
         if (_answers[i].id == id) {
           _answers[i] = acceptedAnswer;
         } else if (_answers[i].isAccepted) {
-          // Make a copy of the answer with isAccepted = false
-          // This would need a proper copy method in the Answer model
-          _answers[i] = Answer(
-            id: _answers[i].id,
-            questionId: _answers[i].questionId,
-            userId: _answers[i].userId,
-            content: _answers[i].content,
-            isAccepted: false,
-            votes: _answers[i].votes,
-            createdAt: _answers[i].createdAt,
-            updatedAt: _answers[i].updatedAt,
-            user: _answers[i].user,
-          );
+          _answers[i] = _answers[i].copyWith(isAccepted: false);
         }
       }
       
@@ -177,6 +289,33 @@ class AnswerProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  // Vote on an answer
+  Future<void> voteAnswer(int answerId, bool isUpvote) async {
+    try {
+      // Optimistic update
+      final index = _answers.indexWhere((a) => a.id == answerId);
+      if (index != -1) {
+        final currentVotes = _answers[index].votes;
+        final newVotes = isUpvote ? currentVotes + 1 : currentVotes - 1;
+        _answers[index] = _answers[index].copyWith(votes: newVotes);
+        notifyListeners();
+      }
+      
+      // Call API
+      await _repository.voteAnswer(answerId, isUpvote);
+    } catch (e) {
+      // Refresh to get the correct state
+      if (_currentQuestionId != null) {
+        getAnswers(_currentQuestionId!, refresh: true);
+      }
+      
+      _errorMessage = e is NetworkException 
+          ? e.message 
+          : 'Failed to vote. Please try again.';
+      notifyListeners();
+    }
+  }
+  
   void clearError() {
     _errorMessage = '';
     if (_status == AnswerStatus.error) {
@@ -186,11 +325,29 @@ class AnswerProvider extends ChangeNotifier {
   }
   
   void clearAnswers() {
+    // Leave the question room if we have one
+    if (_currentQuestionId != null) {
+      _socketService.leaveRoom('question:$_currentQuestionId');
+    }
+    
     _answers = [];
     _currentPage = 1;
     _hasMore = true;
     _currentQuestionId = null;
     _status = AnswerStatus.initial;
     notifyListeners();
+  }
+  
+  @override
+  void dispose() {
+    // Clean up subscriptions
+    _answerStreamSubscription?.cancel();
+    
+    // Leave the question room if we have one
+    if (_currentQuestionId != null) {
+      _socketService.leaveRoom('question:$_currentQuestionId');
+    }
+    
+    super.dispose();
   }
 }

@@ -1,20 +1,21 @@
+import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'notification_model.g.dart';
 
 @JsonSerializable()
-class Notification {
-  final int id;
-  final int userId;
+class NotificationModel {
+  final String id;
+  final String userId;
   final String type;
   final String title;
   final String message;
   final String? referenceType;
-  final int? referenceId;
+  final String? referenceId;
   final bool isRead;
   final DateTime createdAt;
 
-  Notification({
+  NotificationModel({
     required this.id,
     required this.userId,
     required this.type,
@@ -26,6 +27,39 @@ class Notification {
     required this.createdAt,
   });
 
-  factory Notification.fromJson(Map<String, dynamic> json) => _$NotificationFromJson(json);
-  Map<String, dynamic> toJson() => _$NotificationToJson(this);
+  // Create a copy with updated fields
+  NotificationModel copyWith({
+    String? id,
+    String? userId,
+    String? type,
+    String? title,
+    String? message,
+    String? referenceType,
+    String? referenceId,
+    bool? isRead,
+    DateTime? createdAt,
+  }) {
+    return NotificationModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      type: type ?? this.type,
+      title: title ?? this.title,
+      message: message ?? this.message,
+      referenceType: referenceType ?? this.referenceType,
+      referenceId: referenceId ?? this.referenceId,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  factory NotificationModel.fromJson(Map<String, dynamic> json) => _$NotificationModelFromJson(json);
+  
+  Map<String, dynamic> toJson() => _$NotificationModelToJson(this);
+  
+  // Convert to a JSON string
+  String toRawJson() => json.encode(toJson());
+  
+  // Create an instance from a JSON string
+  factory NotificationModel.fromRawJson(String str) => 
+      NotificationModel.fromJson(json.decode(str) as Map<String, dynamic>);
 }
