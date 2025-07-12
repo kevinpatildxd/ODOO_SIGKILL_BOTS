@@ -19,10 +19,10 @@ class NotificationService {
   late NotificationRepository _notificationRepository;
   
   // Local cache of notifications
-  final List<NotificationModel> _notifications = [];
+  final List<Notification> _notifications = [];
   
   // Stream controller for notification updates
-  final _notificationStreamController = StreamController<List<NotificationModel>>.broadcast();
+  final _notificationStreamController = StreamController<List<Notification>>.broadcast();
   
   // Notification state
   ValueNotifier<int> unreadCount = ValueNotifier<int>(0);
@@ -33,7 +33,7 @@ class NotificationService {
   static const String _lastFetchTimeKey = 'stackit_last_notification_fetch';
   
   // Public streams that components can listen to
-  Stream<List<NotificationModel>> get notificationsStream => _notificationStreamController.stream;
+  Stream<List<Notification>> get notificationsStream => _notificationStreamController.stream;
   
   // Private constructor for singleton pattern
   NotificationService._internal();
@@ -67,7 +67,7 @@ class NotificationService {
     
     switch (eventType) {
       case 'new':
-        _handleNewNotification(NotificationModel.fromJson(eventData));
+        _handleNewNotification(Notification.fromJson(eventData));
         break;
       case 'read':
         _handleNotificationRead(eventData['id']);
@@ -80,7 +80,7 @@ class NotificationService {
   }
   
   /// Handles a new notification received via socket.
-  void _handleNewNotification(NotificationModel notification) {
+  void _handleNewNotification(Notification notification) {
     // Add to local cache
     _notifications.insert(0, notification);
     
@@ -127,7 +127,7 @@ class NotificationService {
         _notifications.clear();
         _notifications.addAll(
           notificationsJson
-              .map((json) => NotificationModel.fromRawJson(json))
+              .map((json) => Notification.fromRawJson(json))
               .toList(),
         );
         
@@ -274,7 +274,7 @@ class NotificationService {
   }
   
   /// Gets the cached list of notifications.
-  List<NotificationModel> getNotifications() {
+  List<Notification> getNotifications() {
     return List.unmodifiable(_notifications);
   }
   
