@@ -66,4 +66,116 @@ class Validators {
 
     return null;
   }
+  
+  // Validate password with strong criteria
+  static String? validateStrongPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    
+    if (!RegExp(r'[0-9]').hasMatch(value)) {
+      return 'Password must contain at least one number';
+    }
+    
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+      return 'Password must contain at least one special character';
+    }
+    
+    return null;
+  }
+  
+  // Validate password and confirm password match
+  static String? validateConfirmPassword(String? value, String password) {
+    if (value == null || value.isEmpty) {
+      return 'Confirm password is required';
+    }
+    
+    if (value != password) {
+      return 'Passwords do not match';
+    }
+    
+    return null;
+  }
+  
+  // Validate URL
+  static String? validateURL(String? value) {
+    if (value == null || value.isEmpty) {
+      return null; // URL is optional
+    }
+    
+    final urlPattern = RegExp(
+      r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$'
+    );
+    
+    if (!urlPattern.hasMatch(value)) {
+      return 'Please enter a valid URL';
+    }
+    
+    return null;
+  }
+  
+  // Validate phone number
+  static String? validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return null; // Phone is optional
+    }
+    
+    final phonePattern = RegExp(r'^\+?[0-9]{10,15}$');
+    
+    if (!phonePattern.hasMatch(value)) {
+      return 'Please enter a valid phone number';
+    }
+    
+    return null;
+  }
+  
+  // Validate text length within range
+  static String? validateTextLength(String? value, {
+    required String fieldName,
+    int minLength = 0,
+    int maxLength = 1000,
+    bool isRequired = true,
+  }) {
+    if (value == null || value.isEmpty) {
+      if (isRequired) {
+        return '$fieldName is required';
+      }
+      return null;
+    }
+    
+    if (value.length < minLength) {
+      return '$fieldName must be at least $minLength characters';
+    }
+    
+    if (value.length > maxLength) {
+      return '$fieldName cannot exceed $maxLength characters';
+    }
+    
+    return null;
+  }
+  
+  // Validate if value is a number
+  static String? validateNumber(String? value, {required String fieldName}) {
+    if (value == null || value.isEmpty) {
+      return null; // Number is optional
+    }
+    
+    if (double.tryParse(value) == null) {
+      return '$fieldName must be a valid number';
+    }
+    
+    return null;
+  }
 }

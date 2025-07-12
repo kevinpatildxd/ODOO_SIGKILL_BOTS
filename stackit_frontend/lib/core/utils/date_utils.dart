@@ -45,4 +45,52 @@ class DateUtils {
   static String formatTimeAgo(DateTime date) {
     return formatDate(date);
   }
+  
+  // Format to ISO 8601 string
+  static String toIso8601String(DateTime date) {
+    return date.toIso8601String();
+  }
+  
+  // Parse ISO 8601 string
+  static DateTime? parseIso8601String(String isoString) {
+    try {
+      return DateTime.parse(isoString);
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  // Format with custom pattern
+  static String formatCustom(DateTime date, {bool includeTime = true}) {
+    final months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    final day = date.day;
+    final month = months[date.month - 1];
+    final year = date.year;
+    
+    if (includeTime) {
+      final hour = date.hour.toString().padLeft(2, '0');
+      final minute = date.minute.toString().padLeft(2, '0');
+      return '$month $day, $year at $hour:$minute';
+    }
+    
+    return '$month $day, $year';
+  }
+  
+  // Get difference between two dates in days
+  static int daysBetween(DateTime from, DateTime to) {
+    final difference = to.difference(from);
+    return difference.inDays;
+  }
+  
+  // Check if date is today
+  static bool isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year && 
+           date.month == now.month && 
+           date.day == now.day;
+  }
 }
