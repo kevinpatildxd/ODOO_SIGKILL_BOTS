@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: stackit_db
+      POSTGRES_USER: stackit_user
+      POSTGRES_PASSWORD: stackit_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./stackit_backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./stackit_backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://stackit_user:stackit_password@postgres:5432/stackit_db
+      - NODE_ENV=development
+    volumes:
+      - ./stackit_backend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:

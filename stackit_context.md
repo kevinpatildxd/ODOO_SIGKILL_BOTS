@@ -109,7 +109,7 @@ StackIt is a minimal Q&A forum platform designed for collaborative learning. Our
 
 ### Backend Structure
 ```
-stackit-backend/
+stackit_backend/
 ├── package.json
 ├── .env
 ├── .gitignore
@@ -180,7 +180,7 @@ stackit-backend/
 
 ### Frontend Structure
 ```
-stackit-frontend/
+stackit_frontend/
 ├── pubspec.yaml
 ├── analysis_options.yaml
 ├── android/
@@ -227,80 +227,80 @@ stackit-frontend/
 │   │       ├── vote_datasource.dart
 │   │       ├── tag_datasource.dart
 │   │       └── notification_datasource.dart
-│   ├── presentation/
-│   │   ├── providers/
-│   │   │   ├── auth_provider.dart
-│   │   │   ├── question_provider.dart
-│   │   │   ├── answer_provider.dart
-│   │   │   ├── vote_provider.dart
-│   │   │   ├── tag_provider.dart
-│   │   │   └── notification_provider.dart
-│   │   ├── screens/
-│   │   │   ├── auth/
-│   │   │   │   ├── login_screen.dart
-│   │   │   │   ├── register_screen.dart
-│   │   │   │   └── forgot_password_screen.dart
-│   │   │   ├── home/
-│   │   │   │   ├── home_screen.dart
-│   │   │   │   ├── question_list_screen.dart
-│   │   │   │   └── search_screen.dart
-│   │   │   ├── question/
-│   │   │   │   ├── question_detail_screen.dart
-│   │   │   │   ├── ask_question_screen.dart
-│   │   │   │   └── edit_question_screen.dart
-│   │   │   ├── answer/
-│   │   │   │   ├── answer_screen.dart
-│   │   │   │   └── edit_answer_screen.dart
-│   │   │   ├── profile/
-│   │   │   │   ├── profile_screen.dart
-│   │   │   │   ├── user_questions_screen.dart
-│   │   │   │   └── user_answers_screen.dart
-│   │   │   └── settings/
-│   │   │       ├── settings_screen.dart
-│   │   │       └── notification_settings_screen.dart
-│   │   ├── widgets/
-│   │   │   ├── common/
-│   │   │   │   ├── app_bar.dart
-│   │   │   │   ├── bottom_navigation.dart
-│   │   │   │   ├── loading_widget.dart
-│   │   │   │   ├── error_widget.dart
-│   │   │   │   ├── empty_state_widget.dart
-│   │   │   │   ├── pagination_widget.dart
-│   │   │   │   └── search_bar.dart
-│   │   │   ├── auth/
-│   │   │   │   ├── auth_form.dart
-│   │   │   │   ├── login_form.dart
-│   │   │   │   └── register_form.dart
-│   │   │   ├── question/
-│   │   │   │   ├── question_card.dart
-│   │   │   │   ├── question_detail_card.dart
-│   │   │   │   ├── question_form.dart
-│   │   │   │   ├── question_filters.dart
-│   │   │   │   └── question_stats.dart
-│   │   │   ├── answer/
-│   │   │   │   ├── answer_card.dart
-│   │   │   │   ├── answer_form.dart
-│   │   │   │   ├── answer_list.dart
-│   │   │   │   └── vote_widget.dart
-│   │   │   ├── tag/
-│   │   │   │   ├── tag_chip.dart
-│   │   │   │   ├── tag_selector.dart
-│   │   │   │   └── tag_list.dart
-│   │   │   ├── notification/
-│   │   │   │   ├── notification_card.dart
-│   │   │   │   ├── notification_list.dart
-│   │   │   │   └── notification_badge.dart
-│   │   │   └── editor/
-│   │   │       ├── rich_text_editor.dart
-│   │   │       ├── editor_toolbar.dart
-│   │   │       └── markdown_preview.dart
-│   │   └── routes/
-│   │       ├── app_routes.dart
-│   │       └── route_generator.dart
-│   └── assets/
-│       ├── images/
-│       ├── icons/
-│       └── fonts/
+│   └── presentation/
+│       ├── providers/
+│       │   ├── auth_provider.dart
+│       │   ├── question_provider.dart
+│       │   ├── answer_provider.dart
+│       │   ├── vote_provider.dart
+│       │    ├── tag_provider.dart
+│       │   └── notification_provider.dart
+│       ├── screens/
+│       │   ├── auth/
+│       │   │   ├── login_screen.dart
+│       │   │   ├── register_screen.dart
+│       │   │   └── forgot_password_screen.dart
+│       │   ├── home/
+│       │   │   ├── home_screen.dart
+│       │   │   ├── question_list_screen.dart
+│       │   │   └── search_screen.dart
+│       │   ├── question/
+│       │   │   ├── question_detail_screen.dart
+│       │   │   ├── ask_question_screen.dart
+│       │   │   └── edit_question_screen.dart
+│       │   ├── answer/
+│       │   │   ├── answer_screen.dart
+│       │   │   └── edit_answer_screen.dart
+│       │   ├── profile/
+│       │   │   ├── profile_screen.dart
+│       │   │   ├── user_questions_screen.dart
+│       │   │   └── user_answers_screen.dart
+│       │   └── settings/
+│       │       ├── settings_screen.dart
+│       │       └── notification_settings_screen.dart
+│       ├── widgets/
+│       │   ├── common/
+│       │   │   ├── app_bar.dart
+│       │   │   ├── bottom_navigation.dart
+│       │   │   ├── loading_widget.dart
+│       │   │   ├── error_widget.dart
+│       │   │   ├── empty_state_widget.dart
+│       │   │   ├── pagination_widget.dart
+│       │   │   └── search_bar.dart
+│       │   ├── auth/
+│       │   │   ├── auth_form.dart
+│       │   │   ├── login_form.dart
+│       │   │   └── register_form.dart
+│       │   ├── question/
+│       │   │   ├── question_card.dart
+│       │   │   ├── question_detail_card.dart
+│       │   │   ├── question_form.dart
+│       │   │   ├── question_filters.dart
+│       │   │   └── question_stats.dart
+│       │   ├── answer/
+│       │   │   ├── answer_card.dart
+│       │   │   ├── answer_form.dart
+│       │   │   ├── answer_list.dart
+│       │   │   └── vote_widget.dart
+│       │   ├── tag/
+│       │   │   ├── tag_chip.dart
+│       │   │   ├── tag_selector.dart
+│       │   │   └── tag_list.dart
+│       │   ├── notification/
+│       │   │   ├── notification_card.dart
+│       │   │   ├── notification_list.dart
+│       │   │   └── notification_badge.dart
+│       │   └── editor/
+│       │       ├── rich_text_editor.dart
+│       │       ├── editor_toolbar.dart
+│       │       └── markdown_preview.dart
+│       └── routes/
+│           ├── app_routes.dart
+│           └── route_generator.dart
+│
+│
+│
+│
 ├── test/
 │   ├── unit/
 │   │   ├── models/
