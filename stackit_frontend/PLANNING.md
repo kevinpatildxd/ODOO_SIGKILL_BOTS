@@ -45,8 +45,8 @@ Follow exactly as in `stackit_frontend_context.md`:
 
 ### Phase 4: UI Screens and Widgets 🔄
 - ✅ Build authentication screens in presentation/screens/auth/.
-- 🔄 Implement home and question screens in presentation/screens/home/ and /question/.
-- Create reusable widgets in presentation/widgets/ for questions, answers, tags, etc.
+- ✅ Implement home and question screens in presentation/screens/home/ and /question/.
+- 🔄 Create reusable widgets in presentation/widgets/ for questions, answers, tags, etc.
 - Add rich text editor in widgets/editor/.
 
 ### Phase 5: Real-time and Services
@@ -77,6 +77,9 @@ Follow exactly as in `stackit_frontend_context.md`:
 - ✅ Phase 1-3 complete
 - 🔄 Phase 4 in progress
   - ✅ Authentication UI completed (login, register, forgot password)
-  - 🔄 Next: Home screen and navigation components
+  - ✅ Home screen with bottom navigation completed
+  - ✅ Question list, search, and notification screens implemented
+  - ✅ Common widgets created (loading, error, empty states)
+  - 🔄 Next: Question detail screen and related features
 
 This plan ensures accurate, perfect implementation aligned with context. 

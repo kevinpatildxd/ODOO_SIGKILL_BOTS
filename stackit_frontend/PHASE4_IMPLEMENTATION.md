@@ -17,11 +17,11 @@ We'll implement screens and widgets in a logical order, starting with authentica
 - [x] 1.6. Add navigation between auth screens
 
 ### 2. Home and Feed Screens
-- [ ] 2.1. Create home_screen.dart with bottom navigation
-- [ ] 2.2. Create question_list_screen.dart for the main feed
-- [ ] 2.3. Create search_screen.dart with search functionality
-- [ ] 2.4. Connect home screens to question_provider.dart
-- [ ] 2.5. Implement tag filtering on home screen
+- [x] 2.1. Create home_screen.dart with bottom navigation
+- [x] 2.2. Create question_list_screen.dart for the main feed
+- [x] 2.3. Create search_screen.dart with search functionality
+- [x] 2.4. Connect home screens to question_provider.dart
+- [x] 2.5. Implement tag filtering on home screen
 
 ### 3. Question Screens
 - [ ] 3.1. Create question_detail_screen.dart
@@ -38,7 +38,7 @@ We'll implement screens and widgets in a logical order, starting with authentica
 - [ ] 4.5. Implement answer sorting/filtering
 
 ### 5. Reusable Widgets
-- [ ] 5.1. Create question_card.dart for list items
+- [x] 5.1. Create question_card.dart for list items
 - [ ] 5.2. Create answer_card.dart for answer items
 - [ ] 5.3. Create tag_chip.dart and tag_selector.dart
 - [ ] 5.4. Create vote_widget.dart for voting UI
@@ -46,9 +46,9 @@ We'll implement screens and widgets in a logical order, starting with authentica
 
 ### 6. Common UI Components
 - [ ] 6.1. Create custom app_bar.dart
-- [ ] 6.2. Create bottom_navigation.dart
-- [ ] 6.3. Create loading_widget.dart and error_widget.dart
-- [ ] 6.4. Create empty_state_widget.dart
+- [x] 6.2. Create bottom_navigation.dart
+- [x] 6.3. Create loading_widget.dart and error_widget.dart
+- [x] 6.4. Create empty_state_widget.dart
 - [ ] 6.5. Create search_bar.dart
 
 ### 7. Rich Text Editor Implementation
@@ -78,7 +78,7 @@ We'll implement screens and widgets in a logical order, starting with authentica
 ## Progress Tracking
 - Start Date: Current Date
 - Target Completion: Target Date
-- Current Task: 2.1 - Create home_screen.dart with bottom navigation
+- Current Task: 3.1 - Create question_detail_screen.dart
 
 ## Implementation Notes
 - Follow Material Design guidelines for all UI components
@@ -93,6 +93,10 @@ We'll implement screens and widgets in a logical order, starting with authentica
 - ✅ Auth form widgets with validation and state management
 - ✅ Navigation between auth screens
 - ✅ Error handling for auth operations
+- ✅ Home screen with bottom navigation
+- ✅ Question list screen with infinite scrolling
+- ✅ Search screen with query functionality
+- ✅ Common reusable widgets (loading, error, empty states)
 
 ## Next Steps
-Proceed with implementing the home screen and navigation components.
+Proceed with implementing the question detail screen and related features.
