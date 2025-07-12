@@ -9,13 +9,13 @@ const { validateAnswer } = require('../middleware/validation');
 const router = express.Router();
 
 // Create an answer (requires authentication)
-router.post('/', authenticate, validateAnswer, answerController.createAnswer);
+router.post('/', authenticate, validateAnswer.create, answerController.createAnswer);
 
 // Get answer by ID
 router.get('/:id', answerController.getAnswerById);
 
 // Update answer (requires authentication and ownership)
-router.put('/:id', authenticate, validateAnswer, answerController.updateAnswer);
+router.put('/:id', authenticate, validateAnswer.update, answerController.updateAnswer);
 
 // Delete answer (requires authentication and ownership or admin/moderator role)
 router.delete('/:id', authenticate, answerController.deleteAnswer);

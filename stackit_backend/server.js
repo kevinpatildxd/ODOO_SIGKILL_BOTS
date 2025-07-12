@@ -51,9 +51,11 @@ app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test' || process.env.START_SERVER === 'true') {
+  server.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+  });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {

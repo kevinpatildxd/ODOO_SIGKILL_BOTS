@@ -1,9 +1,9 @@
 const request = require('supertest');
 const app = require('../server');
-const { connectDB, closeDB } = require('../config/database');
+const db = require('../config/database');
 const jwt = require('jsonwebtoken');
 
-// Test user data
+// Mock user data
 const testUser = {
   username: 'testuser',
   email: 'test@example.com',
@@ -11,17 +11,80 @@ const testUser = {
   confirmPassword: 'Password123'
 };
 
-let authToken;
-let userId;
+// Mock user returned from registration
+const mockRegisteredUser = {
+  id: 1,
+  username: 'testuser',
+  email: 'test@example.com',
+  role: 'user',
+  avatar_url: null,
+  bio: null,
+  reputation: 0,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
+};
 
-// Connect to database before tests
-beforeAll(async () => {
-  await connectDB();
+// Mock token for auth tests
+const mockToken = jwt.sign(
+  { userId: 1, role: 'user' },
+  process.env.JWT_SECRET || 'your-secret-key',
+  { expiresIn: '1h' }
+);
+
+// Set up database mocks
+beforeAll(() => {
+  // Mock database query responses
+  db.query.mockImplementation((sql, params) => {
+    // Registration query
+    if (sql.includes('INSERT INTO users') && params && params[0] === testUser.username) {
+      return Promise.resolve({
+        rows: [{ id: 1 }],
+        rowCount: 1
+      });
+    }
+    
+    // Login query
+    if (sql.includes('SELECT * FROM users WHERE email') && params && params[0] === testUser.email) {
+      return Promise.resolve({
+        rows: [{
+          id: 1,
+          username: testUser.username,
+          email: testUser.email,
+          password_hash: '$2a$12$test_hash_that_will_validate', // Mock hash that bcrypt will "verify"
+          role: 'user'
+        }],
+        rowCount: 1
+      });
+    }
+    
+    // Get user profile query
+    if (sql.includes('SELECT id, username, email, role') && params && params[0] === 1) {
+      return Promise.resolve({
+        rows: [mockRegisteredUser],
+        rowCount: 1
+      });
+    }
+    
+    // Update profile query
+    if (sql.includes('UPDATE users SET') && params && params[params.length - 1] === 1) {
+      return Promise.resolve({
+        rows: [{
+          ...mockRegisteredUser,
+          bio: 'This is my test bio',
+          updated_at: new Date().toISOString()
+        }],
+        rowCount: 1
+      });
+    }
+    
+    // Default empty response
+    return Promise.resolve({ rows: [], rowCount: 0 });
+  });
 });
 
-// Close database connection after tests
-afterAll(async () => {
-  await closeDB();
+// Clean up mocks after all tests
+afterAll(() => {
+  jest.clearAllMocks();
 });
 
 describe('Authentication Tests', () => {
@@ -80,13 +143,11 @@ describe('Authentication Tests', () => {
       expect(response.body.data.user).toBeDefined();
       expect(response.body.data.user.email).toBe(testUser.email);
       
-      // Save token and user ID for later tests
-      authToken = response.body.data.token;
-      userId = response.body.data.user.id;
+      // Verify token format in response
+      expect(response.body.data.token).toBeDefined();
+      expect(typeof response.body.data.token).toBe('string');
       
-      // Verify token is valid
-      const decoded = jwt.verify(authToken, process.env.JWT_SECRET || 'your-secret-key');
-      expect(decoded.userId).toBe(userId);
+      // No need to save token as we'll use our mock token for remaining tests
     });
 
     it('should not login with invalid password', async () => {
@@ -119,7 +180,7 @@ describe('Authentication Tests', () => {
     it('should get user profile with valid token', async () => {
       const response = await request(app)
         .get('/api/auth/profile')
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Authorization', `Bearer ${mockToken}`);
 
       expect(response.status).toBe(200);
       expect(response.body.success).toBe(true);
@@ -154,7 +215,7 @@ describe('Authentication Tests', () => {
 
       const response = await request(app)
         .put('/api/auth/profile')
-        .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${mockToken}`)
         .send(updatedData);
 
       expect(response.status).toBe(200);

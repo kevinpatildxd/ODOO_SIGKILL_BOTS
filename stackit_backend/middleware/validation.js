@@ -289,20 +289,31 @@ const passwordSchemas = {
 const validateUser = {
   register: validateSchema(userSchemas.register),
   login: validateSchema(userSchemas.login),
-  updateProfile: validateSchema(userSchemas.updateProfile)
+  updateProfile: validateSchema(userSchemas.updateProfile),
+  resetRequest: validateSchema(passwordSchemas.resetRequest),
+  resetPassword: validateSchema(passwordSchemas.resetPassword),
+  changePassword: validateSchema(passwordSchemas.changePassword)
 };
 
-const validateQuestion = validateSchema(questionSchemas.create);
-const validateQuestionUpdate = validateSchema(questionSchemas.update);
+// Question validation middleware
+const validateQuestion = {
+  create: validateSchema(questionSchemas.create),
+  update: validateSchema(questionSchemas.update)
+};
 
-// Export answer validation middleware
-const validateAnswer = validateSchema(answerSchemas.create);
-const validateAnswerUpdate = validateSchema(answerSchemas.update);
+// Answer validation middleware
+const validateAnswer = {
+  create: validateSchema(answerSchemas.create),
+  update: validateSchema(answerSchemas.update)
+};
 
-// Export vote validation middleware
+// Vote validation middleware
 const validateVote = validateSchema(voteSchemas.create);
 
-const validateTag = validateSchema(tagSchemas.create);
+// Tag validation middleware
+const validateTag = {
+  create: validateSchema(tagSchemas.create)
+};
 
 const validatePagination = validateSchema(queryParamSchemas.pagination, 'query');
 
@@ -311,9 +322,7 @@ const validatePasswordChange = validateSchema(passwordSchemas.changePassword);
 module.exports = {
   validateUser,
   validateQuestion,
-  validateQuestionUpdate,
   validateAnswer,
-  validateAnswerUpdate,
   validateVote,
   validateTag,
   validatePagination,
