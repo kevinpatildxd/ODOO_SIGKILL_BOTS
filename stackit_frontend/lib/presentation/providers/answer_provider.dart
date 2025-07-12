@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stackit_frontend/core/network/network_exceptions.dart';
 import 'package:stackit_frontend/data/models/answer_model.dart';
 import 'package:stackit_frontend/data/repositories/answer_repository.dart';
+import 'package:stackit_frontend/data/models/paginated_response.dart';
 import 'package:stackit_frontend/core/services/socket_service.dart';
 
 enum AnswerStatus { initial, loading, success, error }
@@ -312,6 +313,14 @@ class AnswerProvider extends ChangeNotifier {
           ? e.message 
           : 'Failed to vote. Please try again.';
       notifyListeners();
+    }
+  }
+
+  Future<PaginatedResponse<Answer>> getUserAnswers(int userId, {int page = 1, int limit = 10}) async {
+    try {
+      return await _repository.getAnswersByUserId(userId, page: page, limit: limit);
+    } catch (e) {
+      throw NetworkException(message: e.toString());
     }
   }
   

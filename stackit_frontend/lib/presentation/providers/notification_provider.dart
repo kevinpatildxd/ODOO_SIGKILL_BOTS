@@ -50,9 +50,9 @@ class NotificationProvider extends ChangeNotifier {
       );
       
       if (refresh) {
-        _notifications = result.items;
+        _notifications = result.data;
       } else {
-        _notifications.addAll(result.items);
+        _notifications.addAll(result.data);
       }
       
       _totalPages = result.totalPages;
@@ -81,7 +81,7 @@ class NotificationProvider extends ChangeNotifier {
       final updatedNotification = await _repository.markAsRead(id);
       
       // Update notification in list
-      final index = _notifications.indexWhere((n) => n.id == id);
+      final index = _notifications.indexWhere((n) => n.id == id.toString());
       if (index != -1) {
         _notifications[index] = updatedNotification;
       }
@@ -150,7 +150,7 @@ class NotificationProvider extends ChangeNotifier {
       await _repository.deleteNotification(id);
       
       // Remove notification from list
-      final index = _notifications.indexWhere((n) => n.id == id);
+      final index = _notifications.indexWhere((n) => n.id == id.toString());
       if (index != -1) {
         final wasUnread = !_notifications[index].isRead;
         _notifications.removeAt(index);

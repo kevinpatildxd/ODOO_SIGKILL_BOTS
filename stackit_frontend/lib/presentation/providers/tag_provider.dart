@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:stackit_frontend/core/network/network_exceptions.dart';
 import 'package:stackit_frontend/data/models/tag_model.dart';
 import 'package:stackit_frontend/data/repositories/tag_repository.dart';
+import 'package:collection/collection.dart';
 
 enum TagStatus { initial, loading, success, error }
 
@@ -95,27 +96,29 @@ class TagProvider extends ChangeNotifier {
   
   Future<Tag?> getTagById(int id) async {
     // First check if we already have the tag in our lists
-    Tag? tag = _allTags.firstWhere((t) => t.id == id, orElse: () => _tags.firstWhere((t) => t.id == id, orElse: () => null));
-    
-    return tag;
-      
+    Tag? tag = _allTags.firstWhereOrNull((t) => t.id == id) ?? _tags.firstWhereOrNull((t) => t.id == id);
+
+    if (tag != null) {
+      return tag;
+    }
+
     _status = TagStatus.loading;
     _errorMessage = '';
     notifyListeners();
-    
+
     try {
       tag = await _repository.getTagById(id);
       _status = TagStatus.success;
+      notifyListeners();
+      return tag;
     } catch (e) {
       _status = TagStatus.error;
-      _errorMessage = e is NetworkException 
-          ? e.message 
+      _errorMessage = e is NetworkException
+          ? e.message
           : 'Failed to fetch tag details. Please try again.';
-      tag = null;
+      notifyListeners();
+      return null;
     }
-    
-    notifyListeners();
-    return tag;
   }
   
   void clearSearch() {

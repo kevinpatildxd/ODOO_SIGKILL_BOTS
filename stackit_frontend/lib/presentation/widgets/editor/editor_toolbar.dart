@@ -123,7 +123,6 @@ multiRowsDisplay: false,
               
               // Insert the code block at the current position
               final index = controller.selection.baseOffset;
-              final length = controller.selection.extentOffset - index;
               
               // Insert a new line before the code block if not at the beginning
               controller.document.insert(index, '\n');

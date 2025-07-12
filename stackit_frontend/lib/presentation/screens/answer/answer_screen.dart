@@ -43,13 +43,8 @@ class _AnswerScreenState extends State<AnswerScreen> {
       });
 
       try {
-        final answerRequest = AnswerRequest(
-          questionId: question!.id,
-          content: _contentController.text,
-        );
-        
         await Provider.of<AnswerProvider>(context, listen: false)
-            .createAnswer(answerRequest);
+            .createAnswer(question!.id, _contentController.text);
             
         if (!mounted) return;
         
@@ -80,7 +75,10 @@ class _AnswerScreenState extends State<AnswerScreen> {
       return Scaffold(
         appBar: CustomAppBar(
           title: 'Post Answer',
-          showBackButton: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         body: const Center(child: LoadingWidget()),
       );
@@ -89,7 +87,10 @@ class _AnswerScreenState extends State<AnswerScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Post Answer',
-        showBackButton: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -122,15 +123,11 @@ class _AnswerScreenState extends State<AnswerScreen> {
               child: Column(
                 children: [
                   RichTextEditor(
-                    controller: _contentController,
-                    hint: 'Write your answer here...',
-                    minLines: 10,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter an answer';
-                      }
-                      return null;
+                    onContentChanged: (value) {
+                      _contentController.text = value;
                     },
+                    placeholder: 'Write your answer here...',
+                    height: 300,
                   ),
                   const SizedBox(height: 24),
                   SizedBox(

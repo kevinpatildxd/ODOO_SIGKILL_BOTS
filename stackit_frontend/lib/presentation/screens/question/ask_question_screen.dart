@@ -74,8 +74,8 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
 
     if (_selectedTags.isEmpty) {
       Helpers.showSnackBar(
-        context, 
-        'Please select at least one tag', 
+        context,
+        'Please select at least one tag',
         isError: true,
       );
       return;
@@ -85,7 +85,10 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
       _isSubmitting = true;
     });
 
-    final questionProvider = Provider.of<QuestionProvider>(context, listen: false);
+    final questionProvider = Provider.of<QuestionProvider>(
+      context,
+      listen: false,
+    );
 
     try {
       if (_questionToEdit != null) {
@@ -107,17 +110,20 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
 
       if (context.mounted) {
         if (questionProvider.status == QuestionStatus.success) {
-          Helpers.showSnackBar(
-            context, 
-            _questionToEdit != null
-                ? 'Question updated successfully'
-                : 'Question posted successfully',
-          );
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          if (mounted) {
+            Helpers.showSnackBar(
+              context,
+              _questionToEdit != null
+                  ? 'Question updated successfully'
+                  : 'Question posted successfully',
+            );
+            Navigator.pushReplacementNamed(context, AppRoutes.home);
+          }
         } else if (questionProvider.status == QuestionStatus.error) {
+          if (!mounted) return;
           Helpers.showSnackBar(
-            context, 
-            questionProvider.errorMessage, 
+            context,
+            questionProvider.errorMessage,
             isError: true,
           );
         }
@@ -151,10 +157,9 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
       ),
       body: Consumer<TagProvider>(
         builder: (context, tagProvider, child) {
-          if (tagProvider.status == TagStatus.loading && tagProvider.allTags.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+          if (tagProvider.status == TagStatus.loading &&
+              tagProvider.allTags.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
           }
 
           return SingleChildScrollView(
@@ -169,7 +174,8 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
                       controller: _titleController,
                       decoration: const InputDecoration(
                         labelText: 'Title',
-                        hintText: 'e.g. How to implement authentication in Flutter?',
+                        hintText:
+                            'e.g. How to implement authentication in Flutter?',
                         border: OutlineInputBorder(),
                       ),
                       maxLines: 2,
@@ -236,7 +242,9 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : Text(isEditing ? 'Update Question' : 'Post Question'),
+                            : Text(
+                                isEditing ? 'Update Question' : 'Post Question',
+                              ),
                       ),
                     ),
                   ],
@@ -256,7 +264,7 @@ class _AskQuestionScreenState extends State<AskQuestionScreen> {
       children: availableTags.map((tag) {
         final tagName = tag is String ? tag : tag.name;
         final isSelected = _selectedTags.contains(tagName);
-        
+
         return FilterChip(
           label: Text(tagName),
           selected: isSelected,

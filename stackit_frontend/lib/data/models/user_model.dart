@@ -13,6 +13,7 @@ class User {
   final String role;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? token;
 
   User({
     required this.id,
@@ -24,6 +25,7 @@ class User {
     this.role = 'user',
     required this.createdAt,
     required this.updatedAt,
+    this.token,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);

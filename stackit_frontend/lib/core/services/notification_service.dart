@@ -170,10 +170,10 @@ class NotificationService {
         return;
       }
       
-      final notifications = await _notificationRepository.getNotifications();
+      final response = await _notificationRepository.getNotifications();
       
       _notifications.clear();
-      _notifications.addAll(notifications);
+      _notifications.addAll(response.data);
       
       _updateUnreadCount();
       _notificationStreamController.add(List.from(_notifications));
@@ -201,7 +201,7 @@ class NotificationService {
       _handleNotificationRead(notificationId);
       
       // Call API
-      await _notificationRepository.markNotificationAsRead(notificationId);
+      await _notificationRepository.markAsRead(int.parse(notificationId));
     } catch (e) {
       if (kDebugMode) {
         print('Error marking notification as read: $e');
@@ -227,7 +227,7 @@ class NotificationService {
       _saveNotificationsToCache();
       
       // Call API
-      await _notificationRepository.markAllNotificationsAsRead();
+      await _notificationRepository.markAllAsRead();
     } catch (e) {
       if (kDebugMode) {
         print('Error marking all notifications as read: $e');

@@ -87,4 +87,34 @@ class AnswerRepository {
       throw NetworkException(message: e.toString());
     }
   }
+
+  Future<void> voteAnswer(int id, bool isUpvote) async {
+    try {
+      await _dataSource.voteAnswer(id, isUpvote);
+    } catch (e) {
+      if (e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(message: e.toString());
+    }
+  }
+
+  Future<PaginatedResponse<Answer>> getAnswersByUserId(
+    int userId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      return await _dataSource.getAnswersByUserId(
+        userId,
+        page: page,
+        limit: limit,
+      );
+    } catch (e) {
+      if (e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(message: e.toString());
+    }
+  }
 }

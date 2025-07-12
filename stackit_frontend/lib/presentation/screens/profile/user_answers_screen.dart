@@ -75,7 +75,7 @@ class _UserAnswersScreenState extends State<UserAnswersScreen> {
       final answers = await answerProvider.getUserAnswers(userId, page: 1);
       
       setState(() {
-        _userAnswers = answers.items;
+        _userAnswers = answers.data;
         _hasMorePages = answers.hasNext;
         _currentPage = 1;
         _isLoading = false;
@@ -107,7 +107,7 @@ class _UserAnswersScreenState extends State<UserAnswersScreen> {
       final answers = await answerProvider.getUserAnswers(userId, page: nextPage);
       
       setState(() {
-        _userAnswers.addAll(answers.items);
+        _userAnswers.addAll(answers.data);
         _hasMorePages = answers.hasNext;
         _currentPage = nextPage;
         _isLoading = false;
@@ -177,14 +177,6 @@ class _UserAnswersScreenState extends State<UserAnswersScreen> {
           padding: const EdgeInsets.only(bottom: 16),
           child: AnswerCard(
             answer: answer,
-            showQuestionTitle: true,
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                '/question-detail',
-                arguments: answer.questionId,
-              );
-            },
           ),
         );
       },

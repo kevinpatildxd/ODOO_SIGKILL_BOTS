@@ -75,7 +75,7 @@ class _UserQuestionsScreenState extends State<UserQuestionsScreen> {
       final questions = await questionProvider.getUserQuestions(userId, page: 1);
       
       setState(() {
-        _userQuestions = questions.items;
+        _userQuestions = questions.data;
         _hasMorePages = questions.hasNext;
         _currentPage = 1;
         _isLoading = false;
@@ -107,7 +107,7 @@ class _UserQuestionsScreenState extends State<UserQuestionsScreen> {
       final questions = await questionProvider.getUserQuestions(userId, page: nextPage);
       
       setState(() {
-        _userQuestions.addAll(questions.items);
+        _userQuestions.addAll(questions.data);
         _hasMorePages = questions.hasNext;
         _currentPage = nextPage;
         _isLoading = false;

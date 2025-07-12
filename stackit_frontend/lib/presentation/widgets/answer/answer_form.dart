@@ -67,25 +67,24 @@ class _AnswerFormState extends State<AnswerForm> {
         await answerProvider.createAnswer(widget.questionId, content);
       }
 
-      if (context.mounted) {
-        if (answerProvider.status == AnswerStatus.success) {
-          _contentController.clear();
-          if (widget.onSuccess != null) {
-            widget.onSuccess!();
-          }
-          Helpers.showSnackBar(
-            context, 
-            widget.isEditing 
-                ? 'Your answer has been updated' 
-                : 'Your answer has been posted',
-          );
-        } else if (answerProvider.status == AnswerStatus.error) {
-          Helpers.showSnackBar(
-            context, 
-            answerProvider.errorMessage, 
-            isError: true,
-          );
+      if (!mounted) return;
+      if (answerProvider.status == AnswerStatus.success) {
+        _contentController.clear();
+        if (widget.onSuccess != null) {
+          widget.onSuccess!();
         }
+        Helpers.showSnackBar(
+          context,
+          widget.isEditing
+              ? 'Your answer has been updated'
+              : 'Your answer has been posted',
+        );
+      } else if (answerProvider.status == AnswerStatus.error) {
+        Helpers.showSnackBar(
+          context,
+          answerProvider.errorMessage,
+          isError: true,
+        );
       }
     } finally {
       if (mounted) {
@@ -165,11 +164,13 @@ class _AnswerFormState extends State<AnswerForm> {
                 children: [
                   if (widget.isEditing)
                     TextButton(
-                      onPressed: _isSubmitting ? null : () {
-                        if (widget.onSuccess != null) {
-                          widget.onSuccess!();
-                        }
-                      },
+                      onPressed: _isSubmitting
+                          ? null
+                          : () {
+                              if (widget.onSuccess != null) {
+                                widget.onSuccess!();
+                              }
+                            },
                       child: const Text('Cancel'),
                     ),
                   const SizedBox(width: 16),
@@ -188,7 +189,9 @@ class _AnswerFormState extends State<AnswerForm> {
                               strokeWidth: 2,
                             ),
                           )
-                        : Text(widget.isEditing ? 'Update Answer' : 'Post Answer'),
+                        : Text(
+                            widget.isEditing ? 'Update Answer' : 'Post Answer',
+                          ),
                   ),
                 ],
               ),

@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stackit_frontend/core/network/network_exceptions.dart';
 import 'package:stackit_frontend/data/models/user_model.dart';
 import 'package:stackit_frontend/data/repositories/auth_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
@@ -35,7 +36,7 @@ class AuthProvider extends ChangeNotifier {
       try {
         _token = token;
         // We would ideally verify the token with the backend here
-        _user = User.fromJson(userJson);
+        _user = User.fromJson(jsonDecode(userJson));
         _status = AuthStatus.authenticated;
       } catch (e) {
         _status = AuthStatus.unauthenticated;
@@ -131,7 +132,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _saveAuthData() async {
     if (_user != null && _token != null) {
       await _preferences.setString('auth_token', _token!);
-      await _preferences.setString('user_data', _user!.toJson());
+      await _preferences.setString('user_data', jsonEncode(_user!.toJson()));
     }
   }
 

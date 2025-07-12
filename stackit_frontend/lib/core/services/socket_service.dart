@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../../config/app_config.dart';
 
 /// A service that manages Socket.io connections and events.
@@ -12,10 +12,10 @@ class SocketService {
   static final SocketService _instance = SocketService._internal();
   
   // Socket.io client instance
-  late IO.Socket _socket;
+  late io.Socket _socket;
   
   // Getter for socket instance
-  IO.Socket get socket => _socket;
+  io.Socket get socket => _socket;
   
   // Connection state
   ValueNotifier<bool> isConnected = ValueNotifier<bool>(false);
@@ -46,9 +46,9 @@ class SocketService {
   void initialize({String? authToken}) {
     try {
       // Initialize socket with options
-      _socket = IO.io(
+      _socket = io.io(
         AppConfig.socketUrl,
-        IO.OptionBuilder()
+        io.OptionBuilder()
             .setTransports(['websocket'])
             .disableAutoConnect()
             .setExtraHeaders(authToken != null ? {'Authorization': 'Bearer $authToken'} : {})

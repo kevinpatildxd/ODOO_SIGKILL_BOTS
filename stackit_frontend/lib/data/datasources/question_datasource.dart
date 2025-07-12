@@ -95,4 +95,42 @@ class QuestionDataSource {
       throw NetworkException(message: e.toString());
     }
   }
+
+  Future<void> voteQuestion(int id, bool isUpvote) async {
+    try {
+      await _dio.post(
+        '${ApiEndpoints.questionById}$id/vote',
+        data: {'vote': isUpvote ? 'up' : 'down'},
+      );
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    } catch (e) {
+      throw NetworkException(message: e.toString());
+    }
+  }
+
+  Future<PaginatedResponse<Question>> getQuestionsByUserId(
+    int userId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '${ApiEndpoints.users}/$userId/questions',
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+        },
+      );
+
+      return PaginatedResponse<Question>.fromJson(
+        response.data,
+        (json) => Question.fromJson(json as Map<String, dynamic>),
+      );
+    } on DioException catch (e) {
+      throw NetworkException.fromDioError(e);
+    } catch (e) {
+      throw NetworkException(message: e.toString());
+    }
+  }
 }

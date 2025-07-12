@@ -27,19 +27,14 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
     if (_formKey.currentState?.validate() ?? false) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.forgotPassword(_emailController.text.trim());
-      
-      if (context.mounted) {
-        if (authProvider.status == AuthStatus.unauthenticated) {
-          setState(() {
-            _isSent = true;
-          });
-        } else if (authProvider.status == AuthStatus.error) {
-          Helpers.showSnackBar(
-            context,
-            authProvider.errorMessage,
-            isError: true,
-          );
-        }
+
+      if (!mounted) return;
+      if (authProvider.status == AuthStatus.unauthenticated) {
+        setState(() {
+          _isSent = true;
+        });
+      } else if (authProvider.status == AuthStatus.error) {
+        Helpers.showSnackBar(context, authProvider.errorMessage, isError: true);
       }
     }
   }

@@ -48,13 +48,8 @@ class _EditAnswerScreenState extends State<EditAnswerScreen> {
       });
 
       try {
-        final answerRequest = AnswerRequest(
-          questionId: answer!.questionId,
-          content: _contentController.text,
-        );
-        
         await Provider.of<AnswerProvider>(context, listen: false)
-            .updateAnswer(answer!.id, answerRequest);
+            .updateAnswer(answer!.id, _contentController.text);
             
         if (!mounted) return;
         
@@ -85,7 +80,10 @@ class _EditAnswerScreenState extends State<EditAnswerScreen> {
       return Scaffold(
         appBar: CustomAppBar(
           title: 'Edit Answer',
-          showBackButton: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         ),
         body: const Center(child: LoadingWidget()),
       );
@@ -94,7 +92,10 @@ class _EditAnswerScreenState extends State<EditAnswerScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Edit Answer',
-        showBackButton: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -111,15 +112,12 @@ class _EditAnswerScreenState extends State<EditAnswerScreen> {
               child: Column(
                 children: [
                   RichTextEditor(
-                    controller: _contentController,
-                    hint: 'Edit your answer here...',
-                    minLines: 10,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter an answer';
-                      }
-                      return null;
+                    initialContent: _contentController.text,
+                    onContentChanged: (value) {
+                      _contentController.text = value;
                     },
+                    placeholder: 'Edit your answer here...',
+                    height: 300,
                   ),
                   const SizedBox(height: 24),
                   Row(

@@ -21,4 +21,7 @@ class ApiEndpoints {
 
   // Notifications
   static const String notifications = '/notifications';
+
+  // Users
+  static const String users = '/users';
 }

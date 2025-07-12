@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () async {
           await authProvider.logout();
           if (context.mounted) {
-            Navigator.pushReplacementNamed(context, AppRoutes.login);
+            if(mounted) Navigator.pushReplacementNamed(context, AppRoutes.login);
           }
         },
       ),

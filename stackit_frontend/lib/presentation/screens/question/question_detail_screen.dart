@@ -71,16 +71,15 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     final answerProvider = Provider.of<AnswerProvider>(context, listen: false);
     await answerProvider.acceptAnswer(answerId);
     
-    if (context.mounted) {
-      if (answerProvider.status == AnswerStatus.success) {
-        Helpers.showSnackBar(context, 'Answer has been accepted');
-      } else if (answerProvider.status == AnswerStatus.error) {
-        Helpers.showSnackBar(
-          context, 
-          answerProvider.errorMessage, 
-          isError: true,
-        );
-      }
+    if (!mounted) return;
+    if (answerProvider.status == AnswerStatus.success) {
+      Helpers.showSnackBar(context, 'Answer has been accepted');
+    } else if (answerProvider.status == AnswerStatus.error) {
+      Helpers.showSnackBar(
+        context, 
+        answerProvider.errorMessage, 
+        isError: true,
+      );
     }
   }
 
@@ -105,19 +104,20 @@ class _QuestionDetailScreenState extends State<QuestionDetailScreen> {
     );
 
     if (confirmed == true) {
+      if (!mounted) return;
       final answerProvider = Provider.of<AnswerProvider>(context, listen: false);
       await answerProvider.deleteAnswer(answerId);
       
-      if (context.mounted) {
-        if (answerProvider.status == AnswerStatus.success) {
-          Helpers.showSnackBar(context, 'Answer has been deleted');
-        } else if (answerProvider.status == AnswerStatus.error) {
-          Helpers.showSnackBar(
-            context, 
-            answerProvider.errorMessage, 
-            isError: true,
-          );
-        }
+      if (!mounted) return;
+      
+      if (answerProvider.status == AnswerStatus.success) {
+        Helpers.showSnackBar(context, 'Answer has been deleted');
+      } else if (answerProvider.status == AnswerStatus.error) {
+        Helpers.showSnackBar(
+          context, 
+          answerProvider.errorMessage, 
+          isError: true,
+        );
       }
     }
   }

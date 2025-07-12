@@ -63,10 +63,10 @@ class _RegisterFormState extends State<RegisterForm> {
       );
       
       if (authProvider.status == AuthStatus.authenticated) {
-        if (context.mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
-        }
-      } else if (authProvider.status == AuthStatus.error && context.mounted) {
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, AppRoutes.home);
+      } else if (authProvider.status == AuthStatus.error) {
+        if (!mounted) return;
         Helpers.showSnackBar(
           context,
           authProvider.errorMessage,

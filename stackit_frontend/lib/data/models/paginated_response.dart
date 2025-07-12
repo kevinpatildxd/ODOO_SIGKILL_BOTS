@@ -10,6 +10,8 @@ class PaginatedResponse<T> {
   final int limit;
   final int totalPages;
 
+  bool get hasNext => page < totalPages;
+
   PaginatedResponse({
     required this.data,
     required this.total,

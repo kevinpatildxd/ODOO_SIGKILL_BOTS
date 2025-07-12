@@ -16,7 +16,7 @@ class RouteGenerator {
       case AppRoutes.forgotPassword:
         // Public routes - no authentication required
         return MaterialPageRoute(
-          builder: (_) => AppRoutes.routes[settings.name]!(_.createChildContext(_)),
+          builder: (context) => AppRoutes.routes[settings.name]!(context.createChildContext(context)),
           settings: settings,
         );
 

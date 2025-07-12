@@ -92,4 +92,34 @@ class QuestionRepository {
       throw NetworkException(message: e.toString());
     }
   }
+
+  Future<void> voteQuestion(int id, bool isUpvote) async {
+    try {
+      await _dataSource.voteQuestion(id, isUpvote);
+    } catch (e) {
+      if (e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(message: e.toString());
+    }
+  }
+
+  Future<PaginatedResponse<Question>> getQuestionsByUserId(
+    int userId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      return await _dataSource.getQuestionsByUserId(
+        userId,
+        page: page,
+        limit: limit,
+      );
+    } catch (e) {
+      if (e is NetworkException) {
+        rethrow;
+      }
+      throw NetworkException(message: e.toString());
+    }
+  }
 }
