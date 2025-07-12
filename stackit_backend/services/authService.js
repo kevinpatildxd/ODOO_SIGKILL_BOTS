@@ -149,7 +149,7 @@ class AuthService {
   async changePassword(userId, oldPassword, newPassword) {
     try {
       // Get user data
-      const user = await User.getByEmail(userId);
+      const user = await User.getById(userId);
       if (!user) {
         throw new Error('User not found');
       }

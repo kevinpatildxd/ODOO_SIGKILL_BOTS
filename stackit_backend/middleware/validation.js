@@ -232,11 +232,67 @@ const queryParamSchemas = {
   })
 };
 
+// Password change schema
+const passwordSchemas = {
+  changePassword: Joi.object({
+    oldPassword: Joi.string().required()
+      .messages({
+        'any.required': 'Current password is required'
+      }),
+    newPassword: Joi.string().min(8).max(100).required()
+      .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])'))
+      .messages({
+        'string.min': 'New password must be at least 8 characters long',
+        'string.max': 'New password cannot exceed 100 characters',
+        'string.pattern.base': 'New password must contain at least one uppercase letter, one lowercase letter, and one number',
+        'any.required': 'New password is required'
+      }),
+    confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required()
+      .messages({
+        'any.only': 'Password confirmation does not match new password',
+        'any.required': 'Password confirmation is required'
+      })
+  }),
+  
+  // Password reset request schema
+  resetRequest: Joi.object({
+    email: Joi.string().email().required()
+      .messages({
+        'string.email': 'Please enter a valid email address',
+        'any.required': 'Email is required'
+      })
+  }),
+  
+  // Password reset schema
+  resetPassword: Joi.object({
+    resetToken: Joi.string().required()
+      .messages({
+        'any.required': 'Reset token is required'
+      }),
+    newPassword: Joi.string().min(8).max(100).required()
+      .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])'))
+      .messages({
+        'string.min': 'New password must be at least 8 characters long',
+        'string.max': 'New password cannot exceed 100 characters',
+        'string.pattern.base': 'New password must contain at least one uppercase letter, one lowercase letter, and one number',
+        'any.required': 'New password is required'
+      }),
+    confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required()
+      .messages({
+        'any.only': 'Password confirmation does not match new password',
+        'any.required': 'Password confirmation is required'
+      })
+  })
+};
+
 // Validation middleware functions
 const validateUser = {
   register: validateSchema(userSchemas.register),
   login: validateSchema(userSchemas.login),
-  updateProfile: validateSchema(userSchemas.updateProfile)
+  updateProfile: validateSchema(userSchemas.updateProfile),
+  changePassword: validateSchema(passwordSchemas.changePassword),
+  resetRequest: validateSchema(passwordSchemas.resetRequest),
+  resetPassword: validateSchema(passwordSchemas.resetPassword)
 };
 
 const validateQuestion = {

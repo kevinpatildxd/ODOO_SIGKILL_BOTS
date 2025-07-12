@@ -35,8 +35,8 @@ app.get('/', (req, res) => {
   });
 });
 
-// Initialize routes (will be implemented later)
-// app.use('/api/auth', require('./routes/auth'));
+// Initialize routes
+app.use('/api/auth', require('./routes/auth'));
 // app.use('/api/questions', require('./routes/questions'));
 // app.use('/api/answers', require('./routes/answers'));
 // app.use('/api/votes', require('./routes/votes'));
