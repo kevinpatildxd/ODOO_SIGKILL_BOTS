@@ -175,6 +175,12 @@ class QuestionProvider extends ChangeNotifier {
     notifyListeners();
   }
   
+  // Select a question from the list without making an API call
+  void selectQuestion(Question question) {
+    _selectedQuestion = question;
+    notifyListeners();
+  }
+  
   void clearSelectedQuestion() {
     _selectedQuestion = null;
     notifyListeners();

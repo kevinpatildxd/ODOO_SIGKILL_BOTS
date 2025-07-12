@@ -1,4 +1,4 @@
-class DateFormatter {
+class DateUtils {
   static String formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
@@ -39,5 +39,10 @@ class DateFormatter {
     final year = date.year.toString();
 
     return '$day/$month/$year';
+  }
+  
+  // Alias for formatDate to match the import in question_card.dart
+  static String formatTimeAgo(DateTime date) {
+    return formatDate(date);
   }
 }
