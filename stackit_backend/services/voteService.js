@@ -1,258 +1,288 @@
+/**
+ * Vote Service
+ * Business logic for vote operations
+ */
 const Vote = require('../models/Vote');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
 const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 class VoteService {
   /**
-   * Vote on a question or answer
-   * @param {Object} voteData - Vote data
-   * @param {number} voteData.user_id - User ID
-   * @param {string} voteData.target_type - Target type ('question' or 'answer')
-   * @param {number} voteData.target_id - Target ID (question or answer ID)
-   * @param {number} voteData.vote_type - Vote type (1 for upvote, -1 for downvote)
-   * @returns {Promise<Object>} Vote result
+   * Cast a vote on a question or answer
+   * @param {number} userId - User ID
+   * @param {string} targetType - Target type ('question' or 'answer')
+   * @param {number} targetId - Target ID
+   * @param {number} voteType - Vote type (1 for upvote, -1 for downvote)
+   * @returns {Promise<Object>} Vote result with updated vote count
    */
-  async vote(voteData) {
-    const { user_id, target_type, target_id, vote_type } = voteData;
-
+  async vote(userId, targetType, targetId, voteType) {
     try {
-      // Validate target exists
-      if (target_type === 'question') {
-        const question = await Question.getById(target_id);
+      // Validate input
+      if (!['question', 'answer'].includes(targetType)) {
+        throw new Error('Invalid target type. Must be "question" or "answer"');
+      }
+
+      if (![1, -1].includes(voteType)) {
+        throw new Error('Invalid vote type. Must be 1 (upvote) or -1 (downvote)');
+      }
+
+      // Check if target exists
+      let targetAuthorId;
+      if (targetType === 'question') {
+        const question = await Question.getById(targetId);
         if (!question) {
           throw new Error('Question not found');
         }
-      } else if (target_type === 'answer') {
-        const answer = await Answer.getById(target_id);
+        targetAuthorId = question.user_id;
+      } else {
+        const answer = await Answer.getById(targetId);
         if (!answer) {
           throw new Error('Answer not found');
         }
+        targetAuthorId = answer.user_id;
+      }
+
+      // Prevent voting on your own content
+      if (targetAuthorId === userId) {
+        throw new Error('You cannot vote on your own content');
       }
 
       // Process the vote
-      const result = await Vote.vote({
-        user_id,
-        target_type,
-        target_id,
-        vote_type
+      const result = await Vote.createOrUpdate({
+        user_id: userId,
+        target_type: targetType,
+        target_id: targetId,
+        vote_type: voteType
       });
 
-      // Create notification for upvotes
-      if (vote_type === 1) {
-        await Notification.notifyVote({
-          target_type,
-          target_id,
-          voter_id: user_id,
-          vote_type
-        });
+      // Get updated vote count
+      const voteCount = await Vote.getVoteCounts(targetType, targetId);
+
+      // Update user reputation if needed
+      if (!result.removed) {
+        await this._updateUserReputation(targetAuthorId, targetType, voteType, result.previousVoteType);
       }
 
-      return result;
+      // Create notification for the target author
+      await this._createVoteNotification(userId, targetAuthorId, targetType, targetId, voteType, result.removed);
+
+      return {
+        targetType,
+        targetId,
+        voteType: result.removed ? 0 : voteType,
+        previousVoteType: result.previousVoteType,
+        voteCount
+      };
     } catch (error) {
       throw new Error(`Failed to process vote: ${error.message}`);
     }
   }
 
   /**
-   * Vote on a question
-   * @param {number} questionId - Question ID
-   * @param {number} userId - User ID
-   * @param {number} voteType - Vote type (1 for upvote, -1 for downvote)
-   * @returns {Promise<Object>} Vote result
-   */
-  async voteQuestion(questionId, userId, voteType) {
-    return this.vote({
-      user_id: userId,
-      target_type: 'question',
-      target_id: questionId,
-      vote_type: voteType
-    });
-  }
-
-  /**
-   * Vote on an answer
-   * @param {number} answerId - Answer ID
-   * @param {number} userId - User ID
-   * @param {number} voteType - Vote type (1 for upvote, -1 for downvote)
-   * @returns {Promise<Object>} Vote result
-   */
-  async voteAnswer(answerId, userId, voteType) {
-    return this.vote({
-      user_id: userId,
-      target_type: 'answer',
-      target_id: answerId,
-      vote_type: voteType
-    });
-  }
-
-  /**
-   * Get a user's vote on a target
+   * Get user's vote on a target
    * @param {number} userId - User ID
    * @param {string} targetType - Target type ('question' or 'answer')
-   * @param {number} targetId - Target ID (question or answer ID)
-   * @returns {Promise<number>} Vote type (1, -1, or 0 if not voted)
+   * @param {number} targetId - Target ID
+   * @returns {Promise<Object>} User vote information
    */
   async getUserVote(userId, targetType, targetId) {
     try {
-      return await Vote.getUserVote(userId, targetType, targetId);
+      // Validate input
+      if (!['question', 'answer'].includes(targetType)) {
+        throw new Error('Invalid target type. Must be "question" or "answer"');
+      }
+
+      const vote = await Vote.getByUserAndTarget(userId, targetType, targetId);
+      const voteCount = await Vote.getVoteCounts(targetType, targetId);
+
+      return {
+        targetType,
+        targetId,
+        voteType: vote ? vote.vote_type : 0,
+        voteCount
+      };
     } catch (error) {
       throw new Error(`Failed to get user vote: ${error.message}`);
     }
   }
 
   /**
-   * Get user's vote on a question
-   * @param {number} questionId - Question ID
+   * Remove a vote
    * @param {number} userId - User ID
-   * @returns {Promise<number>} Vote type (1, -1, or 0 if not voted)
-   */
-  async getUserQuestionVote(questionId, userId) {
-    return this.getUserVote(userId, 'question', questionId);
-  }
-
-  /**
-   * Get user's vote on an answer
-   * @param {number} answerId - Answer ID
-   * @param {number} userId - User ID
-   * @returns {Promise<number>} Vote type (1, -1, or 0 if not voted)
-   */
-  async getUserAnswerVote(answerId, userId) {
-    return this.getUserVote(userId, 'answer', answerId);
-  }
-
-  /**
-   * Get all votes for a target
    * @param {string} targetType - Target type ('question' or 'answer')
-   * @param {number} targetId - Target ID (question or answer ID)
-   * @returns {Promise<Object>} Vote counts
+   * @param {number} targetId - Target ID
+   * @returns {Promise<Object>} Result with updated vote count
    */
-  async getVotesForTarget(targetType, targetId) {
+  async removeVote(userId, targetType, targetId) {
     try {
-      return await Vote.getVotesForTarget(targetType, targetId);
+      // Validate input
+      if (!['question', 'answer'].includes(targetType)) {
+        throw new Error('Invalid target type. Must be "question" or "answer"');
+      }
+
+      // Check if vote exists
+      const existingVote = await Vote.getByUserAndTarget(userId, targetType, targetId);
+      if (!existingVote) {
+        throw new Error('Vote not found');
+      }
+
+      // Get target author before removing vote
+      let targetAuthorId;
+      if (targetType === 'question') {
+        const question = await Question.getById(targetId);
+        if (question) {
+          targetAuthorId = question.user_id;
+        }
+      } else {
+        const answer = await Answer.getById(targetId);
+        if (answer) {
+          targetAuthorId = answer.user_id;
+        }
+      }
+
+      // Remove the vote
+      const result = await Vote.remove(userId, targetType, targetId);
+
+      // Update user reputation if needed
+      if (targetAuthorId) {
+        await this._updateUserReputation(targetAuthorId, targetType, 0, existingVote.vote_type);
+      }
+
+      // Get updated vote count
+      const voteCount = await Vote.getVoteCounts(targetType, targetId);
+
+      return {
+        targetType,
+        targetId,
+        voteType: 0,
+        previousVoteType: existingVote.vote_type,
+        voteCount
+      };
     } catch (error) {
-      throw new Error(`Failed to get votes for target: ${error.message}`);
+      throw new Error(`Failed to remove vote: ${error.message}`);
     }
   }
 
   /**
-   * Get votes for a question
-   * @param {number} questionId - Question ID
-   * @returns {Promise<Object>} Vote counts
-   */
-  async getVotesForQuestion(questionId) {
-    return this.getVotesForTarget('question', questionId);
-  }
-
-  /**
-   * Get votes for an answer
-   * @param {number} answerId - Answer ID
-   * @returns {Promise<Object>} Vote counts
-   */
-  async getVotesForAnswer(answerId) {
-    return this.getVotesForTarget('answer', answerId);
-  }
-
-  /**
-   * Get users who voted on a target
+   * Get vote counts for a target
    * @param {string} targetType - Target type ('question' or 'answer')
-   * @param {number} targetId - Target ID (question or answer ID)
-   * @param {number} voteType - Vote type (1 for upvotes, -1 for downvotes)
-   * @returns {Promise<Array>} Array of user IDs
+   * @param {number} targetId - Target ID
+   * @returns {Promise<Object>} Vote counts
    */
-  async getVotersByTarget(targetType, targetId, voteType) {
+  async getVoteCounts(targetType, targetId) {
     try {
-      return await Vote.getVotersByTarget(targetType, targetId, voteType);
+      // Validate input
+      if (!['question', 'answer'].includes(targetType)) {
+        throw new Error('Invalid target type. Must be "question" or "answer"');
+      }
+
+      return await Vote.getVoteCounts(targetType, targetId);
     } catch (error) {
-      throw new Error(`Failed to get voters for target: ${error.message}`);
+      throw new Error(`Failed to get vote counts: ${error.message}`);
     }
   }
 
   /**
-   * Get users who upvoted a question
-   * @param {number} questionId - Question ID
-   * @returns {Promise<Array>} Array of user IDs
-   */
-  async getQuestionUpvoters(questionId) {
-    return this.getVotersByTarget('question', questionId, 1);
-  }
-
-  /**
-   * Get users who downvoted a question
-   * @param {number} questionId - Question ID
-   * @returns {Promise<Array>} Array of user IDs
-   */
-  async getQuestionDownvoters(questionId) {
-    return this.getVotersByTarget('question', questionId, -1);
-  }
-
-  /**
-   * Get users who upvoted an answer
-   * @param {number} answerId - Answer ID
-   * @returns {Promise<Array>} Array of user IDs
-   */
-  async getAnswerUpvoters(answerId) {
-    return this.getVotersByTarget('answer', answerId, 1);
-  }
-
-  /**
-   * Get users who downvoted an answer
-   * @param {number} answerId - Answer ID
-   * @returns {Promise<Array>} Array of user IDs
-   */
-  async getAnswerDownvoters(answerId) {
-    return this.getVotersByTarget('answer', answerId, -1);
-  }
-
-  /**
-   * Get targets voted by a user
+   * Update user reputation based on votes
+   * @private
    * @param {number} userId - User ID
    * @param {string} targetType - Target type ('question' or 'answer')
-   * @param {number} voteType - Vote type (1 for upvotes, -1 for downvotes)
-   * @returns {Promise<Array>} Array of target IDs
+   * @param {number} newVoteType - New vote type (1, -1, or 0 for removed)
+   * @param {number} previousVoteType - Previous vote type (1, -1, or 0)
+   * @returns {Promise<void>}
    */
-  async getTargetsVotedByUser(userId, targetType, voteType) {
+  async _updateUserReputation(userId, targetType, newVoteType, previousVoteType) {
     try {
-      return await Vote.getTargetsVotedByUser(userId, targetType, voteType);
+      // Calculate reputation change
+      let repChange = 0;
+      
+      // Reverse previous vote impact if any
+      if (previousVoteType !== 0) {
+        if (targetType === 'question') {
+          repChange -= previousVoteType === 1 ? 5 : -2;
+        } else { // answer
+          repChange -= previousVoteType === 1 ? 10 : -2;
+        }
+      }
+      
+      // Add new vote impact if any
+      if (newVoteType !== 0) {
+        if (targetType === 'question') {
+          repChange += newVoteType === 1 ? 5 : -2;
+        } else { // answer
+          repChange += newVoteType === 1 ? 10 : -2;
+        }
+      }
+      
+      // Update user reputation if there's a change
+      if (repChange !== 0) {
+        await User.updateReputation(userId, repChange);
+      }
     } catch (error) {
-      throw new Error(`Failed to get targets voted by user: ${error.message}`);
+      console.error(`Failed to update reputation: ${error.message}`);
+      // Don't throw error to prevent vote operation from failing
     }
   }
 
   /**
-   * Get questions upvoted by a user
-   * @param {number} userId - User ID
-   * @returns {Promise<Array>} Array of question IDs
+   * Create notification for vote
+   * @private
+   * @param {number} voterId - User ID who voted
+   * @param {number} recipientId - User ID who receives the notification
+   * @param {string} targetType - Target type ('question' or 'answer')
+   * @param {number} targetId - Target ID
+   * @param {number} voteType - Vote type (1, -1)
+   * @param {boolean} removed - Whether vote was removed
+   * @returns {Promise<void>}
    */
-  async getQuestionsUpvotedByUser(userId) {
-    return this.getTargetsVotedByUser(userId, 'question', 1);
-  }
-
-  /**
-   * Get questions downvoted by a user
-   * @param {number} userId - User ID
-   * @returns {Promise<Array>} Array of question IDs
-   */
-  async getQuestionsDownvotedByUser(userId) {
-    return this.getTargetsVotedByUser(userId, 'question', -1);
-  }
-
-  /**
-   * Get answers upvoted by a user
-   * @param {number} userId - User ID
-   * @returns {Promise<Array>} Array of answer IDs
-   */
-  async getAnswersUpvotedByUser(userId) {
-    return this.getTargetsVotedByUser(userId, 'answer', 1);
-  }
-
-  /**
-   * Get answers downvoted by a user
-   * @param {number} userId - User ID
-   * @returns {Promise<Array>} Array of answer IDs
-   */
-  async getAnswersDownvotedByUser(userId) {
-    return this.getTargetsVotedByUser(userId, 'answer', -1);
+  async _createVoteNotification(voterId, recipientId, targetType, targetId, voteType, removed) {
+    try {
+      // Don't notify for downvotes to avoid negative notifications
+      // Don't notify if vote was removed
+      if (voteType === -1 || removed) {
+        return;
+      }
+      
+      // Get voter info
+      const voter = await User.getById(voterId);
+      if (!voter) return;
+      
+      let title;
+      let content;
+      
+      // Get content info
+      if (targetType === 'question') {
+        const question = await Question.getById(targetId);
+        if (!question) return;
+        
+        title = 'Someone upvoted your question';
+        content = `${voter.username} upvoted your question: "${question.title.substring(0, 50)}${question.title.length > 50 ? '...' : ''}"`;
+      } else {
+        const answer = await Answer.getById(targetId);
+        if (!answer) return;
+        
+        const question = await Question.getById(answer.question_id);
+        if (!question) return;
+        
+        title = 'Someone upvoted your answer';
+        content = `${voter.username} upvoted your answer on: "${question.title.substring(0, 50)}${question.title.length > 50 ? '...' : ''}"`;
+      }
+      
+      // Create notification
+      await Notification.create({
+        user_id: recipientId,
+        type: 'vote',
+        title,
+        message: content,
+        reference_type: targetType,
+        reference_id: targetId
+      });
+    } catch (error) {
+      console.error(`Failed to create vote notification: ${error.message}`);
+      // Don't throw error to prevent vote operation from failing
+    }
   }
 }
 

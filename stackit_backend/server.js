@@ -38,10 +38,10 @@ app.get('/', (req, res) => {
 // Initialize routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/questions', require('./routes/questions'));
-// app.use('/api/answers', require('./routes/answers'));
-// app.use('/api/votes', require('./routes/votes'));
+app.use('/api/answers', require('./routes/answers'));
+app.use('/api/votes', require('./routes/votes'));
 app.use('/api/tags', require('./routes/tags'));
-// app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 // 404 handler for undefined routes
 app.use(notFoundHandler);
