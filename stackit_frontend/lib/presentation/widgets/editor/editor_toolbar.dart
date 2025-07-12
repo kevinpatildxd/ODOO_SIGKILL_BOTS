@@ -60,6 +60,7 @@ multiRowsDisplay: false,
             showDividers: true,
             customButtons: [
               // Custom button for inserting code snippet
+              
               if (showCodeBlock)
                 QuillToolbarCustomButtonOptions(
                   icon: Icon(Icons.code),
