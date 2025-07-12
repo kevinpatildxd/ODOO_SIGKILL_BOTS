@@ -2,59 +2,63 @@
  * Tag routes
  */
 const express = require('express');
-const tagController = require('../controllers/tagController');
-const { authenticate } = require('../middleware/auth');
-const { validateTag } = require('../middleware/validation');
+const { authenticate, authorizeAdmin } = require('../middleware/auth');
+const { tagSchemas, validateSchema } = require('../middleware/validation');
 const { apiLimiter } = require('../middleware/rateLimit');
-
+const tagController = require('../controllers/tagController');
+const { cacheMiddleware } = require('../utils/caching');
 const router = express.Router();
 
-// Get all tags with pagination and search
-// Public route - no authentication required
-router.get('/', apiLimiter, tagController.getAllTags);
+// Apply rate limiting to all routes in this router
+router.use(apiLimiter);
 
-// Get popular tags
-// Public route - no authentication required
-router.get('/popular', apiLimiter, tagController.getPopularTags);
+// Get all tags - with longer caching (10 minutes) as tags don't change often
+router.get('/', cacheMiddleware(600), tagController.getAllTags);
 
-// Search tags (for autocomplete)
-// Public route - no authentication required
-router.get('/search', apiLimiter, tagController.searchTags);
+// Get popular tags - cached for 10 minutes
+router.get('/popular', cacheMiddleware(600), tagController.getPopularTags);
 
-// Get tags for a specific question
-// Public route - no authentication required
-router.get('/question/:questionId', apiLimiter, tagController.getTagsForQuestion);
+// Get a tag by name - cached for 5 minutes
+router.get('/:name', cacheMiddleware(300), tagController.getTagByName);
 
-// Get tag by ID
-// Public route - no authentication required
-router.get('/:id', apiLimiter, tagController.getTagById);
+// Search tags - cached but shorter (1 minute) due to search nature
+router.get('/search/:query', cacheMiddleware(60), tagController.searchTags);
 
-// Create a new tag
-// Protected route - authentication required
+// Get questions for a specific tag - cached for 2 minutes
+router.get('/:name/questions', cacheMiddleware(120), tagController.getTagQuestions);
+
+// Create a new tag - admin only
 router.post(
-  '/',
-  authenticate,
-  apiLimiter,
-  validateTag.create,
+  '/', 
+  authenticate, 
+  authorizeAdmin,
+  validateSchema(tagSchemas.create), 
   tagController.createTag
 );
 
-// Update a tag
-// Protected route - authentication required, admin only
+// Update a tag - admin only
 router.put(
-  '/:id',
+  '/:name',
   authenticate,
-  apiLimiter,
-  validateTag.create,
+  authorizeAdmin,
+  validateSchema(tagSchemas.update),
   tagController.updateTag
 );
 
-// Delete a tag
-// Protected route - authentication required, admin only
-router.delete(
-  '/:id',
+// Merge tags - admin only
+router.post(
+  '/merge',
   authenticate,
-  apiLimiter,
+  authorizeAdmin,
+  validateSchema(tagSchemas.merge),
+  tagController.mergeTags
+);
+
+// Delete a tag - admin only
+router.delete(
+  '/:name',
+  authenticate,
+  authorizeAdmin,
   tagController.deleteTag
 );
 
