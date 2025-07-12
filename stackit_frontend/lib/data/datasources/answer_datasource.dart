@@ -9,6 +9,8 @@ import 'package:stackit_frontend/data/models/paginated_response.dart';
 class AnswerDataSource {
   final Dio _dio = ApiClient.dio;
 
+  AnswerDataSource(ApiClient apiClient);
+
   Future<PaginatedResponse<Answer>> getAnswersByQuestionId(
     int questionId, {
     int page = 1,

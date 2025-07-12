@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:flutter_quill/quill_delta.dart';
 import 'package:stackit_frontend/config/theme.dart';
 import 'package:stackit_frontend/presentation/widgets/editor/rich_text_editor.dart';
 
@@ -30,46 +31,51 @@ class MarkdownPreview extends StatelessWidget {
       child: QuillEditor(
         controller: controller,
         scrollController: ScrollController(),
-        scrollable: true,
         focusNode: FocusNode(),
-        autoFocus: false,
-        readOnly: true,
-        expands: height == null,
-        padding: EdgeInsets.zero,
-        customStyles: DefaultStyles(
-          paragraph: DefaultTextBlockStyle(
-            AppTextStyles.body1,
-            const Tuple2(16.0, 0), 
-            const Tuple2(0, 10), 
-            null
-          ),
-          h1: DefaultTextBlockStyle(
-            AppTextStyles.h1,
-            const Tuple2(16.0, 0), 
-            const Tuple2(0, 10),
-            null
-          ),
-          h2: DefaultTextBlockStyle(
-            AppTextStyles.h2,
-            const Tuple2(16.0, 0), 
-            const Tuple2(0, 10), 
-            null
-          ),
-          code: DefaultTextBlockStyle(
-            const TextStyle(
-              fontFamily: 'monospace',
-              fontSize: 14,
-              color: Color(0xFF333333),
-              height: 1.5,
+        config: QuillEditorConfig(
+          autoFocus: false,
+          expands: height == null,
+          padding: EdgeInsets.zero,
+          customStyles: DefaultStyles(
+            paragraph: DefaultTextBlockStyle(
+              AppTextStyles.body1,
+              HorizontalSpacing(16, 0),
+              const VerticalSpacing(0, 10),
+              const VerticalSpacing(10, 0),
+              BoxDecoration()
             ),
-            const Tuple2(16.0, 16.0), 
-            const Tuple2(8.0, 8.0), 
-            BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(4.0),
-            )
+            h1: DefaultTextBlockStyle(
+              AppTextStyles.h1,
+              HorizontalSpacing(16, 0),
+              const VerticalSpacing(0, 10),
+              const VerticalSpacing(10, 0),
+              BoxDecoration()
+            ),
+            h2: DefaultTextBlockStyle(
+              AppTextStyles.h2,
+              HorizontalSpacing(16, 0),
+              const VerticalSpacing(0, 10),
+              const VerticalSpacing(10, 0),
+              BoxDecoration()
+            ),
+            code: DefaultTextBlockStyle(
+              const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 14,
+                color: Color(0xFF333333),
+                height: 1.5,
+              ),
+              const HorizontalSpacing(16.0, 16.0),
+              const VerticalSpacing(8.0, 8.0),
+              const VerticalSpacing(8.0, 8.0),
+              BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+            ),
           ),
         ),
+        
       ),
     );
   }

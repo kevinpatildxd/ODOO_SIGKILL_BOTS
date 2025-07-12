@@ -141,7 +141,7 @@ class _UserQuestionsScreenState extends State<UserQuestionsScreen> {
 
     if (_hasError) {
       return Center(
-        child: app_error.ErrorWidget(
+        child: app_error.CustomErrorWidget(
           message: _errorMessage,
           onRetry: _fetchUserQuestions,
         ),

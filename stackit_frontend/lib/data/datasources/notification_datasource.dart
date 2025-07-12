@@ -8,6 +8,8 @@ import 'package:stackit_frontend/data/models/paginated_response.dart';
 class NotificationDataSource {
   final Dio _dio = ApiClient.dio;
 
+  NotificationDataSource(ApiClient apiClient);
+
   Future<PaginatedResponse<Notification>> getNotifications({
     int page = 1,
     int limit = 10,

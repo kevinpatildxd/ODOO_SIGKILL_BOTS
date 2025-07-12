@@ -39,7 +39,7 @@ class NotificationCard extends StatelessWidget {
           onDelete!();
           return true;
         } else {
-          await notificationProvider.deleteNotification(notification.id);
+          await notificationProvider.deleteNotification(notification.id as int);
           return true;
         }
       },
@@ -63,7 +63,7 @@ class NotificationCard extends StatelessWidget {
               if (onMarkAsRead != null) {
                 onMarkAsRead!();
               } else {
-                notificationProvider.markAsRead(notification.id);
+                notificationProvider.markAsRead(notification.id as int);
               }
             }
           },

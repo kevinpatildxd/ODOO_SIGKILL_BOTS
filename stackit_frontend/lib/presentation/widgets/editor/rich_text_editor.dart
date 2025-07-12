@@ -124,13 +124,7 @@ class _RichTextEditorState extends State<RichTextEditor> {
               child: QuillEditor(
                 controller: _controller,
                 scrollController: ScrollController(),
-                scrollable: true,
                 focusNode: _focusNode,
-                autoFocus: widget.autofocus,
-                readOnly: widget.readOnly,
-                expands: true,
-                padding: const EdgeInsets.all(8),
-                placeholder: widget.placeholder,
               ),
             ),
           ),

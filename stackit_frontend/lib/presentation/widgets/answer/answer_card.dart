@@ -39,7 +39,7 @@ class AnswerCard extends StatelessWidget {
             VoteWidget(
               targetType: 'answer',
               targetId: answer.id,
-              voteCount: answer.voteCount,
+              voteCount: answer.votes,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -97,21 +97,21 @@ class AnswerCard extends StatelessWidget {
   }
 
   Widget _buildCardFooter(BuildContext context) {
-    final authorName = answer.author?.username ?? 'Anonymous';
-    final authorAvatar = answer.author?.avatarUrl;
+    final authorName = answer.user?.username ?? 'Anonymous';
+    final authorAvatar = answer.user?.avatarUrl;
     
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         const Spacer(),
-        if (onEdit != null && answer.author != null)
+        if (onEdit != null && answer.user != null)
           _buildActionButton(
             context,
             icon: Icons.edit_outlined,
             label: 'Edit',
             onPressed: onEdit,
           ),
-        if (onDelete != null && answer.author != null)
+        if (onDelete != null && answer.user != null)
           _buildActionButton(
             context,
             icon: Icons.delete_outline,

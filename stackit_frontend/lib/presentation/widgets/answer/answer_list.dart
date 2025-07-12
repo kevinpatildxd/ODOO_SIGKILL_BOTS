@@ -53,13 +53,13 @@ class _AnswerListState extends State<AnswerList> {
       // Then sort by the selected option
       switch (_sortOption) {
         case 'votes':
-          return b.voteCount.compareTo(a.voteCount);
+          return b.votes.compareTo(a.votes);
         case 'newest':
           return b.createdAt.compareTo(a.createdAt);
         case 'oldest':
           return a.createdAt.compareTo(b.createdAt);
         default:
-          return b.voteCount.compareTo(a.voteCount);
+          return b.votes.compareTo(a.votes);
       }
     });
     

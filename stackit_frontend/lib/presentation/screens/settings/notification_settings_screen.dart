@@ -20,7 +20,6 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Notification Settings',
-        showBackButton: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),

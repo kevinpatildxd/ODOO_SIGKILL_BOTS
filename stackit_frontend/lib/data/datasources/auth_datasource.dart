@@ -8,6 +8,8 @@ import 'package:stackit_frontend/data/models/auth_response.dart';
 class AuthDataSource {
   final Dio _dio = ApiClient.dio;
 
+  AuthDataSource(ApiClient apiClient);
+
   Future<AuthResponse> login(LoginRequest request) async {
     try {
       final response = await _dio.post(

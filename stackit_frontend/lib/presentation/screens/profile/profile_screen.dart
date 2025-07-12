@@ -23,7 +23,7 @@ class ProfileScreen extends StatelessWidget {
     if (authProvider.status == AuthStatus.error) {
       return Scaffold(
         body: Center(
-          child: app_error.ErrorWidget(
+          child: app_error.CustomErrorWidget(
             message: authProvider.errorMessage,
             onRetry: () {
               // Implement refresh logic if needed

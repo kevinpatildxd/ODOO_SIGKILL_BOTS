@@ -131,7 +131,7 @@ class _NotificationListState extends State<NotificationList> {
     if (provider.status == NotificationStatus.error &&
         provider.notifications.isEmpty) {
       return Center(
-        child: app_error.ErrorWidget(
+        child: app_error.CustomErrorWidget(
           message: provider.errorMessage,
           onRetry: () => provider.getNotifications(refresh: true),
         ),
